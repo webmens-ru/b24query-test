@@ -113,9 +113,11 @@ class ActiveRecord extends BaseActiveRecord
      * This will only set defaults for attributes that are `null`.
      * @return $this the model instance itself.
      */
+    // TODO loadDefaultValues($skipIfSet = true)
+    //  Переписать для b24
     public function loadDefaultValues($skipIfSet = true)
     {
-        Yii::warning('loadDefaultValues', 'ar');
+//        Yii::warning('loadDefaultValues', 'ar');
         $columns = static::getTableSchema()->columns;
         foreach ($this->attributes() as $name) {
             if (isset($columns[$name])) {
@@ -135,11 +137,11 @@ class ActiveRecord extends BaseActiveRecord
      * You may override this method if you want to use a different database connection.
      * @return Connection the database connection used by this AR class.
      */
-    public static function getDb()
-    {
-        Yii::warning('getDb', 'ar');
-        return Yii::$app->getDb();
-    }
+//    public static function getDb()
+//    {
+//        Yii::warning('getDb', 'ar');
+//        return Yii::$app->getDb();
+//    }
 
 
 
@@ -151,6 +153,8 @@ class ActiveRecord extends BaseActiveRecord
      * @throws InvalidConfigException if there is no primary key defined.
      * @internal
      */
+    // TODO findByCondition($condition)
+    //  Переписать для b24
     protected static function findByCondition($condition)
     {
         Yii::warning('findByCondition', 'ar');
@@ -210,6 +214,8 @@ class ActiveRecord extends BaseActiveRecord
      * @since 2.0.15
      * @internal
      */
+    // TODO filterCondition(array $condition, array $aliases = [])
+    //  Переписать для b24
     protected static function filterCondition(array $condition, array $aliases = [])
     {
         Yii::warning('filterCondition', 'ar');
@@ -237,6 +243,8 @@ class ActiveRecord extends BaseActiveRecord
      * @since 2.0.17
      * @internal
      */
+    // TODO filterValidColumnNames($db, array $aliases)
+    //  Переписать для b24
     protected static function filterValidColumnNames($db, array $aliases)
     {
         Yii::warning('filterValidColumnNames', 'ar');
@@ -262,6 +270,8 @@ class ActiveRecord extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
+    // TODO refresh()
+    //  Переписать для b24
     public function refresh()
     {
         Yii::warning('refresh', 'ar');
@@ -337,18 +347,20 @@ class ActiveRecord extends BaseActiveRecord
      * Do not name the parameters as `:bp0`, `:bp1`, etc., because they are used internally by this method.
      * @return int the number of rows updated
      */
-//    public static function updateAllCounters($counters, $condition = '', $params = [])
-//    {
-//        $n = 0;
-//        foreach ($counters as $name => $value) {
-//            $counters[$name] = new Expression("[[$name]]+:bp{$n}", [":bp{$n}" => $value]);
-//            $n++;
-//        }
-//        $command = static::getDb()->createCommand();
-//        $command->update(static::tableName(), $counters, $condition, $params);
-//
-//        return $command->execute();
-//    }
+    // TODO updateAllCounters($counters, $condition = '', $params = [])
+    //  Переписать для b24
+    public static function updateAllCounters($counters, $condition = '', $params = [])
+    {
+        $n = 0;
+        foreach ($counters as $name => $value) {
+            $counters[$name] = new Expression("[[$name]]+:bp{$n}", [":bp{$n}" => $value]);
+            $n++;
+        }
+        $command = static::getDb()->createCommand();
+        $command->update(static::tableName(), $counters, $condition, $params);
+
+        return $command->execute();
+    }
 
     /**
      * Deletes rows in the table using the provided conditions.
@@ -393,7 +405,6 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function find()
     {
-        Yii::warning('find', 'ar');
         return Yii::createObject(ActiveQuery::className(), [get_called_class()]);
     }
 
@@ -415,18 +426,20 @@ class ActiveRecord extends BaseActiveRecord
      * @return TableSchema the schema information of the DB table associated with this AR class.
      * @throws InvalidConfigException if the table for the AR class does not exist.
      */
-//    public static function getTableSchema()
-//    {
-//        $tableSchema = static::getDb()
-//            ->getSchema()
-//            ->getTableSchema(static::tableName());
-//
-//        if ($tableSchema === null) {
-//            throw new InvalidConfigException('The table does not exist: ' . static::tableName());
-//        }
-//
-//        return $tableSchema;
-//    }
+    // TODO getTableSchema()
+    //  Переписать для b24
+    public static function getTableSchema()
+    {
+        $tableSchema = static::getDb()
+            ->getSchema()
+            ->getTableSchema(static::tableName());
+
+        if ($tableSchema === null) {
+            throw new InvalidConfigException('The table does not exist: ' . static::tableName());
+        }
+
+        return $tableSchema;
+    }
 
     /**
      * Returns the primary key name(s) for this AR class.
@@ -441,24 +454,22 @@ class ActiveRecord extends BaseActiveRecord
      *
      * @return string[] the primary keys of the associated database table.
      */
+    // TODO primaryKey()
+    //  Переписать(Исправить)
     public static function primaryKey()
     {
-        Yii::warning('primaryKey', 'ar');
         //return static::getTableSchema()->primaryKey;
         return 'id';
     }
 
     /**
-     * Returns the list of all attribute names of the model.
-     * The default implementation will return all column names of the table associated with this AR class.
+     * Базовый метод получения столбцов сущности, который переопределяется у наследников
      * @return array list of attribute names.
      */
-//    public function attributes()
-//    {
-//        Yii::warning('attributes', 'ar');
-//        //return array_keys(static::getTableSchema()->columns);
-//        return [/*'id', 'title'*/];
-//    }
+    public function attributes()
+    {
+        return [];
+    }
 
     /**
      * Declares which DB operations should be performed within a transaction in different scenarios.
@@ -487,18 +498,21 @@ class ActiveRecord extends BaseActiveRecord
      * @return array the declarations of transactional operations. The array keys are scenarios names,
      * and the array values are the corresponding transaction operations.
      */
-    public function transactions()
+    /*public function transactions()
     {
         Yii::warning('transactions', 'ar');
         return [];
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
+    // TODO populateRecord($record, $row)
+    //  Переписать(Исправить)
     public static function populateRecord($record, $row)
     {
 //        Yii::warning('populateRecord', 'ar');
+        Yii::warning($row, 'ar $row');
         //$columns = static::getTableSchema()->columns;
         $columns = ['id' => 'id', 'title' => 'title'];
 
@@ -558,6 +572,8 @@ class ActiveRecord extends BaseActiveRecord
      * @return bool whether the attributes are valid and the record is inserted successfully.
      * @throws \Exception in case insert failed.
      */
+    // TODO insert($runValidation = true, $attributes = null)
+    //  Переписать для b24
     public function insert($runValidation = true, $attributes = null)
     {
         Yii::warning('insert', 'ar');
@@ -595,6 +611,8 @@ class ActiveRecord extends BaseActiveRecord
      * meaning all attributes that are loaded from DB will be saved.
      * @return bool whether the record is inserted successfully.
      */
+    // TODO insertInternal($attributes = null)
+    //  Переписать для b24
     protected function insertInternal($attributes = null)
     {
         Yii::warning('insertInternal', 'ar');
@@ -670,6 +688,8 @@ class ActiveRecord extends BaseActiveRecord
      * being updated is outdated.
      * @throws \Exception in case update failed.
      */
+    // TODO update($runValidation = true, $attributeNames = null)
+    //  Переписать для b24
     public function update($runValidation = true, $attributeNames = null)
     {
         Yii::warning('update', 'ar');
@@ -720,6 +740,8 @@ class ActiveRecord extends BaseActiveRecord
      * being deleted is outdated.
      * @throws \Exception in case delete failed.
      */
+    // TODO delete()
+    //  Переписать для b24
     public function delete()
     {
         Yii::warning('delete', 'ar');
@@ -752,6 +774,8 @@ class ActiveRecord extends BaseActiveRecord
      * Note that it is possible the number of rows deleted is 0, even though the deletion execution is successful.
      * @throws StaleObjectException
      */
+    // TODO deleteInternal()
+    //  Переписать для b24
     protected function deleteInternal()
     {
         Yii::warning('deleteInternal', 'ar');
@@ -783,14 +807,16 @@ class ActiveRecord extends BaseActiveRecord
      * @param ActiveRecord $record record to compare to
      * @return bool whether the two active records refer to the same row in the same database table.
      */
-//    public function equals($record)
-//    {
-//        if ($this->isNewRecord || $record->isNewRecord) {
-//            return false;
-//        }
-//
-//        return static::tableName() === $record->tableName() && $this->getPrimaryKey() === $record->getPrimaryKey();
-//    }
+    // TODO equals($record)
+    //  Переписать для b24
+    public function equals($record)
+    {
+        if ($this->isNewRecord || $record->isNewRecord) {
+            return false;
+        }
+
+        return static::tableName() === $record->tableName() && $this->getPrimaryKey() === $record->getPrimaryKey();
+    }
 
     /**
      * Returns a value indicating whether the specified operation is transactional in the current [[$scenario]].
@@ -825,11 +851,13 @@ class ActiveRecord extends BaseActiveRecord
      * @param array $params parameters to be bound to the SQL statement during execution.
      * @return ActiveQuery the newly created [[ActiveQuery]] instance
      */
-//    public static function findBySql($sql, $params = [])
-//    {
-//        $query = static::find();
-//        $query->sql = $sql;
-//
-//        return $query->params($params);
-//    }
+    // TODO function findBySql($sql, $params = [])
+    //  Переписать для b24 findByParams($params)
+    public static function findBySql($sql, $params = [])
+    {
+        $query = static::find();
+        $query->sql = $sql;
+
+        return $query->params($params);
+    }
 }

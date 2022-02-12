@@ -17,6 +17,20 @@ class B24SpTestSearch extends B24SpTest {
         return [[array_keys($this->attributeLabels()), 'string']];
     }
 
+    public function prepareSearchQuery($query, $requestParams){
+        Yii::warning($requestParams, 'prepareSearchQuery($query, $requestParams)');
+        $this->load($requestParams,'');
+        Yii::warning(ArrayHelper::toArray($this), '$this->load');
+        if (!$this->validate()) {
+            $query->where('0=1');
+            return $query;
+        }
+        foreach ($this->rules()[0][0] as $value) {
+            $query->andFilterCompare($value, $this->{$value});
+        }
+        return $query;
+    }
+
 //$b24App = $component->connectFromUser($auth);
 //$obB24 = new B24Object($b24App);
 

@@ -5,12 +5,19 @@ namespace app\models\b24;
 //use yii\base\Model;
 use Yii;
 
-class SpBase extends \app\models\b24\ActiveRecord
+
+class SpActiveRecord extends \app\models\b24\ActiveRecord
 {
     public static function entityTypeId()
     {
         return null;
     }
+
+    public static function listMethod()
+    {
+        return 'crm.item.list';
+    }
+
 
     public $id;
     public $xmlId;
@@ -133,7 +140,22 @@ class SpBase extends \app\models\b24\ActiveRecord
 
     public static function find()
     {
-        return Yii::createObject(ActiveQuery::className(), [get_called_class()]);
+        return Yii::createObject(SpActiveQuery::className(), [get_called_class()]);
     }
 
+    public static function listDataSelector()
+    {
+        return 'result.items';
+    }
+
+    /**
+     * Возвращает все столбцы сущности, может быть переопределена для оптимизации запроса
+     * @return array
+     */
+    public function attributes()
+    {
+        // TODO loadDefaultValues($skipIfSet = true)
+        //  Переписать для b24
+        return array_keys(static::getTableSchema()->columns);
+    }
 }

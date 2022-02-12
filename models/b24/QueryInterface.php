@@ -37,5 +37,5 @@ interface QueryInterface
 
     public function offset($offset);
 
-    public function emulateExecution($value = true);
+    //public function emulateExecution($value = true);
 }

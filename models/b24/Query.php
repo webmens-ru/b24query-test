@@ -31,7 +31,7 @@ class Query extends Component implements QueryInterface {
     public $queryCacheDuration;
     public $queryCacheDependency;
 
-    public $emulateExecution;//  изучить тип и место где должен быть.
+    //public $emulateExecution;//  изучить тип и место где должен быть.
     public $indexBy;
 
 
@@ -58,51 +58,53 @@ class Query extends Component implements QueryInterface {
 
     //public $params = [];
 
-    private $_filter = [];
+    //private $_filter = [];
 
     //private $_method = '';
 
-    private $_method = 'crm.item.list';
+    public $method = '';
 
-    private $_start = 0;
+    //private $_start = 0;
 
-    private $_limit = 0;
+    //public $limit = 0;
 
     public $entityTypeId;
 
     //private $_entityTypeId = 0;
 
-    private $_entityTypeId = 174;
+    //private $_entityTypeId = 174;
 
     public $modelClass;
 
-    public function setFilter($filter){
-        $_filter = $filter;
-        return $this;
-    }
-
-//    public function getFilter(){
-//        return
-//    }
-
     public function all($auth = null){
 //        Yii::warning('function all($auth = null)');
+//        Yii::warning($this->where, '$this->where1');
+//        Yii::warning($this->params, '$this->params1');
         if ($this->emulateExecution) {
             return [];
         }
         $this->prepairParams();
+//        Yii::warning($this->where, '$this->where2');
+//        Yii::warning($this->params, '$this->params2');
+        //#вынести часть логики
         $component = new b24Tools();
         $b24App = null;// $component->connectFromUser($auth);
         if($auth === null){
+            Yii::warning('connectFromAdmin');
             $b24App = $component->connectFromAdmin();
         }else{
+            Yii::warning('connectFromUser');
             $b24App = $component->connectFromUser($auth);
         }
         $obB24 = new B24Object($b24App);
         $rows = [];
-        if($this->_limit = 0){
+        //#Исправить
+        if(!$this->limit){
+            Yii::warning($this->limit, '$this->limit');
+            //#передавать в функцию limit и ofset
             $rows = $this->getFullData($obB24);
         }else{
+            Yii::warning($this->limit, '$this->limit');
             $rows = $this->getData($obB24);
         }
         return $this->populate($rows);
@@ -123,93 +125,154 @@ class Query extends Component implements QueryInterface {
         return $result;
     }
 
-    private function getData($obB24){
-        $request =  $obB24->client->call($this->_method, $this->params);
-        return ArrayHelper::getValue($request, 'result.items');
+//    private function getData($obB24){
+//        $request =  $obB24->client->call($this->method, $this->params);
+//        return ArrayHelper::getValue($request, 'result.items');
+//
+//    }
 
-    }
+//    public function params(){
+//        return [];
+//    }
 
-    private function getFullData($obB24){
-        $request = $obB24->client->call($this->_method, $this->params);;
-        $countCalls = (int)ceil($request['total'] / $obB24->client::MAX_BATCH_CALLS);
-        $data = ArrayHelper::getValue($request, 'result.items');
-        Yii::warning($data, '$data');
-        for ($i = 1; $i < $countCalls; $i++)
-            $obB24->client->addBatchCall('crm.item.list', [
-                'entityTypeId' => $this->_entityTypeId,
-                'filter' => $this->_filter,
-                'start' => $obB24->client::MAX_BATCH_CALLS * $i,
-            ], function ($result) use (&$data) {
-                $data = array_merge($data, ArrayHelper::getValue($result, 'result.items'));
-            });
-        $obB24->client->processBatchCalls();
-        Yii::warning($data, '$data');
-        return $data; //Добавить вывод дополнительной информации
-    }
+//    private function getFullData($obB24){
+//        Yii::warning('getFullData($obB24)');
+//        $request = $obB24->client->call($this->method, $this->params);;
+//        $countCalls = (int)ceil($request['total'] / $obB24->client::MAX_BATCH_CALLS);
+//        $data = ArrayHelper::getValue($request, 'result.items');
+//        Yii::warning($data, '$data');
+//        for ($i = 1; $i < $countCalls; $i++)
+//            $obB24->client->addBatchCall('crm.item.list', [
+//                'entityTypeId' => $this->entityTypeId,
+//                'filter' => $this->where,
+//                'start' => $obB24->client::MAX_BATCH_CALLS * $i,
+//            ], function ($result) use (&$data) {
+//                $data = array_merge($data, ArrayHelper::getValue($result, 'result.items'));
+//            });
+//        $obB24->client->processBatchCalls();
+//        Yii::warning($data, '$data');
+//        return $data; //Добавить вывод дополнительной информации
+//    }
+
+//    public function andFilterCompare($name, $value, $defaultOperator = '=') {
+//        $arr = [];
+//        //убираем '[ и ']' в начале и в конце строки в запросе
+//        if ((substr($value, 0, 1) == '[') && (substr($value, -1, 1) == ']')) {
+//            $data = substr($value, 1, -1);
+//            $arr = explode(',', $data);
+//            foreach ($arr as $var) {
+//                $this->andFilterCompare($name, $var);
+//            }
+//            return $this;
+//        } else {
+//            if (preg_match('/^(<>|>=|>|<=|<|=)/', $value, $matches)) {
+//                $operator = $matches[1];
+//                $value = substr($value, strlen($operator));
+//            } elseif ($value == 'isNull') {
+//                return $this->andWhere([$name => null]);
+//            } elseif (preg_match('/^(%%)/', $value, $matches)) {
+//                $operator = $matches[1];
+//                $value = substr($value, strlen($operator));
+//                $operator = 'like';
+//            } elseif (preg_match('/^(in\[.*])/', $value, $matches)) {
+//                $operator = 'in';
+//                $value = explode(',', mb_substr($value, 3, -1));
+//            } else {
+//                $operator = $defaultOperator;
+//            }
+//            return $this->andFilterWhere([$operator, $name, $value]);
+//        }
+//    }
 
     public function andFilterCompare($name, $value, $defaultOperator = '=') {
-        $arr = [];
-        //убираем '[ и ']' в начале и в конце строки в запросе
+        Yii::warning([$name, $value], 'andFilterCompare');
+//        if (preg_match('/^(<>|>=|>|<=|<|=)/', (string)$value, $matches)) {
+//            $operator = $matches[1];
+//            $value = substr($value, strlen($operator));
+//        } else {
+//            $operator = $defaultOperator;
+//        }
+//
+//        return $this->andFilterWhere([$operator, $name, $value]);
+
+
+        //$filter = [];
+        //убираем '[' и ']' в начале и в конце строки в запросе
         if ((substr($value, 0, 1) == '[') && (substr($value, -1, 1) == ']')) {
             $data = substr($value, 1, -1);
             $arr = explode(',', $data);
             foreach ($arr as $var) {
                 $this->andFilterCompare($name, $var);
             }
+//            Yii::warning($arr, 'return1');
             return $this;
         } else {
-            if (preg_match('/^(<>|>=|>|<=|<|=)/', $value, $matches)) {
+            if (preg_match('/^(>=|>|<=|<|=)/', $value, $matches)) {
                 $operator = $matches[1];
                 $value = substr($value, strlen($operator));
-            } elseif ($value == 'isNull') {
-                return $this->andWhere([$name => null]);
-            } elseif (preg_match('/^(%%)/', $value, $matches)) {
-                $operator = $matches[1];
+            }
+            elseif (preg_match('/^(<>)/', $value, $matches)) {
+                $operator = '!=';
                 $value = substr($value, strlen($operator));
-                $operator = 'like';
-            } elseif (preg_match('/^(in\[.*])/', $value, $matches)) {
-                $operator = 'in';
-                $value = explode(',', mb_substr($value, 3, -1));
-            } else {
+            }
+//            elseif ($str == 'isNull') {
+//                return $this->andWhere([$name => null]);
+//            } elseif (preg_match('/^(%%)/', $str, $matches)) {
+//                $operator = $matches[1];
+//                $value = substr($str, strlen($operator));
+//                $operator = 'like';
+//            } elseif (preg_match('/^(in\[.*\])/', $str, $matches)) {
+//                $operator = 'in';
+//                $value = explode(',', mb_substr($str, 3, -1));
+//            }
+            else {
                 $operator = $defaultOperator;
             }
-            return $this->andFilterWhere([$operator, $name, $value]);
+//            $c = $operator.$name." ".$value;
+//            Yii::warning([$operator, $name, $value], 'return2');
+            $this->andFilterWhere([$operator, $name, $value]);
+            Yii::warning(ArrayHelper::toArray($this),'ArrayHelper::toArray($this)');
+            return $this;
+
         }
     }
 
-    public function andFilterWhere($params){
-        if($params[2]){
-            $this->filter[$params[0].$params[1]] = $params[2];
-        }
+//    public function andFilterWhere($params){
+//        if($params[2]){
+//            $this->filter[$params[0].$params[1]] = $params[2];
+//        }
+//
+//        return $this;
+//
+//    }
 
-        return $this;
+//    public function getEntityTypeIdUsedInFrom()
+//    {
+//        if (empty($this->entityTypeId)) {
+//            $this->entityTypeId = $this->getPrimaryTableName();
+//        }
+//
+//        return $this->entityTypeId;
+//
+//        //return parent::getEntityTypeIdUsedInFrom();
+//    }
 
-    }
-
-    public function getEntityTypeIdUsedInFrom()
-    {
-        if (empty($this->entityTypeId)) {
-            $this->entityTypeId = $this->getPrimaryTableName();
-        }
-
-        return $this->entityTypeId;
-
-        //return parent::getEntityTypeIdUsedInFrom();
-    }
-
-    protected function getPrimaryTableName()
-    {
-        $modelClass = $this->modelClass;
-        //return $modelClass::tableName();
-        return $modelClass::entityTypeId();
-    }
+//    protected function getPrimaryTableName()
+//    {
+//        $modelClass = $this->modelClass;
+//        //return $modelClass::tableName();
+//        return $modelClass::entityTypeId();
+//    }
 
     protected function prepairParams(){
-        $this->getEntityTypeIdUsedInFrom();
+        //$this->getEntityTypeIdUsedInFrom();/
         $data = [
-            'entityTypeId' => $this->entityTypeId,
+            //'entityTypeId' => $this->entityTypeId,
+            'filter' => $this->where,
+            'order' => $this->orderBy,
             //Остальные параметры
         ];
+        Yii::warning($data, '$data');
         $this->params = $data;
     }
 
@@ -306,23 +369,24 @@ class Query extends Component implements QueryInterface {
         return $this;
     }
 
-    public function andWhere($condition, $params = [])
-    {
-        //#Переписать
-        if ($this->where === null) {
-            $this->where = $condition;
-        } elseif (is_array($this->where) && isset($this->where[0]) && strcasecmp($this->where[0], 'and') === 0) {
-            $this->where[] = $condition;
-        } else {
-            $this->where = ['and', $this->where, $condition];
-        }
-        $this->addParams($params);
-        return $this;
-    }
+//    public function andWhere($condition, $params = [])
+//    {
+//        //#Переписать
+//        if ($this->where === null) {
+//            $this->where = $condition;
+//        } elseif (is_array($this->where) && isset($this->where[0]) && strcasecmp($this->where[0], 'and') === 0) {
+//            $this->where[] = $condition;
+//        } else {
+//            $this->where = ['and', $this->where, $condition];
+//        }
+//        $this->addParams($params);
+//        return $this;
+//    }
 
     public function where($condition, $params = [])
     {
-        $this->where = $condition;
+        $this->where = $this->conditionPrepare($condition);
+        Yii::warning($this->where, '$this->where');
         $this->addParams($params);
         return $this;
     }

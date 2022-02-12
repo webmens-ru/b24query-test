@@ -19,27 +19,25 @@ class ActiveQuery extends Query {
 
     const EVENT_INIT = 'init';
 
-    public $params = [
-        'entityTypeId' => 174
-        /*, 'filter' => $query->filter*/];
+    public $params = [];
 
     //public $params = [];
 
-    private $_filter = [];
-
     //private $_method = '';
 
-    private $_method = 'crm.item.list';
+    //public $method = '';
 
-    private $_start = 0;
+    //private $_start = 0;
 
-    private $_limit = 0;
+    //private $_limit = 0;
 
-    public $entityTypeId;
+//    public $entityTypeId;
+
+    public $listDataSelector = 'result';
 
     //private $_entityTypeId = 0;
 
-    private $_entityTypeId = 174;
+    //private $_entityTypeId; //= 174;
 
     public $modelClass;
 
@@ -47,6 +45,7 @@ class ActiveQuery extends Query {
     {
 //        Yii::warning($modelClass, '$modelClass');
         $this->modelClass = $modelClass;
+        //$this->listMethod = $modelClass::listMethod();
         parent::__construct($config);
     }
 
@@ -54,13 +53,6 @@ class ActiveQuery extends Query {
     {
         parent::init();
         $this->trigger(self::EVENT_INIT);
-    }
-
-
-
-    public function setFilter($filter){
-        $_filter = $filter;
-        return $this;
     }
 
 //    public function getFilter(){
@@ -96,6 +88,7 @@ class ActiveQuery extends Query {
 
     public function populate($rows)
     {
+        Yii::warning($rows,'populate($rows)');
         if (empty($rows)) {
             return [];
         }
@@ -121,93 +114,88 @@ class ActiveQuery extends Query {
         return parent::populate($models);
     }
 
-    private function getData($obB24){
-        return $obB24->client->call($this->_method, $this->params);
+    public function getListDataSelector(){
+        if(method_exists($this->modelClass, 'listDataSelector')){
+            return call_user_func([$this->modelClass, 'listDataSelector']); //'result.items'
+        }else{
+            return $this->listDataSelector;
+        }
     }
 
-    private function getFullData($obB24){
+    public function getData($obB24){
+        $this->method = call_user_func([$this->modelClass, 'listMethod']);
+        $this->listDataSelector = $this->getListDataSelector();
+        $request =  $obB24->client->call($this->method, $this->params);
+        return ArrayHelper::getValue($request, $this->listDataSelector);
+    }
+
+    public function getFullData($obB24){
+        $this->method = call_user_func([$this->modelClass, 'listMethod']);
+        $this->dataSelector = call_user_func([$this->modelClass, 'listDataSelector']);
         $request = $this->getData($obB24);
         $countCalls = (int)ceil($request['total'] / $obB24->client::MAX_BATCH_CALLS);
-        $data = ArrayHelper::getValue($request, 'result.items');
+        $data = ArrayHelper::getValue($request, $this->listDataSelector);
         //Yii::warning($data, '$data');
         for ($i = 1; $i < $countCalls; $i++)
-            $obB24->client->addBatchCall('crm.item.list', [
-                'entityTypeId' => $this->_entityTypeId,
-                'filter' => $this->_filter,
-                'start' => $obB24->client::MAX_BATCH_CALLS * $i,
-            ], function ($result) use (&$data) {
-                $data = array_merge($data, ArrayHelper::getValue($result, 'result.items'));
-            });
+            $obB24->client->addBatchCall($this->method,
+                array_merge($this->params, ['start' => $obB24->client::MAX_BATCH_CALLS * $i]),
+                function ($result) use (&$data) {
+                    $data = array_merge($data, ArrayHelper::getValue($result, 'result.items'));
+                }
+            );
         $obB24->client->processBatchCalls();
         return $data; //Добавить вывод дополнительной информации
     }
 
-    public function andFilterCompare($name, $value, $defaultOperator = '=') {
-        $arr = [];
-        //убираем '[ и ']' в начале и в конце строки в запросе
-        if ((substr($value, 0, 1) == '[') && (substr($value, -1, 1) == ']')) {
-            $data = substr($value, 1, -1);
-            $arr = explode(',', $data);
-            foreach ($arr as $var) {
-                $this->andFilterCompare($name, $var);
-            }
-            return $this;
-        } else {
-            if (preg_match('/^(<>|>=|>|<=|<|=)/', $value, $matches)) {
-                $operator = $matches[1];
-                $value = substr($value, strlen($operator));
-            } elseif ($value == 'isNull') {
-                return $this->andWhere([$name => null]);
-            } elseif (preg_match('/^(%%)/', $value, $matches)) {
-                $operator = $matches[1];
-                $value = substr($value, strlen($operator));
-                $operator = 'like';
-            } elseif (preg_match('/^(in\[.*])/', $value, $matches)) {
-                $operator = 'in';
-                $value = explode(',', mb_substr($value, 3, -1));
-            } else {
-                $operator = $defaultOperator;
-            }
-            return $this->andFilterWhere([$operator, $name, $value]);
-        }
-    }
+//    public function andFilterCompare($name, $value, $defaultOperator = '=') {
+//        $arr = [];
+//        //убираем '[ и ']' в начале и в конце строки в запросе
+//        if ((substr($value, 0, 1) == '[') && (substr($value, -1, 1) == ']')) {
+//            $data = substr($value, 1, -1);
+//            $arr = explode(',', $data);
+//            foreach ($arr as $var) {
+//                $this->andFilterCompare($name, $var);
+//            }
+//            return $this;
+//        } else {
+//            if (preg_match('/^(<>|>=|>|<=|<|=)/', $value, $matches)) {
+//                $operator = $matches[1];
+//                $value = substr($value, strlen($operator));
+//            } elseif ($value == 'isNull') {
+//                return $this->andWhere([$name => null]);
+//            } elseif (preg_match('/^(%%)/', $value, $matches)) {
+//                $operator = $matches[1];
+//                $value = substr($value, strlen($operator));
+//                $operator = 'like';
+//            } elseif (preg_match('/^(in\[.*])/', $value, $matches)) {
+//                $operator = 'in';
+//                $value = explode(',', mb_substr($value, 3, -1));
+//            } else {
+//                $operator = $defaultOperator;
+//            }
+//            return $this->andFilterWhere([$operator, $name, $value]);
+//        }
+//    }
 
-    public function andFilterWhere($params){
-        if($params[2]){
-            $this->filter[$params[0].$params[1]] = $params[2];
-        }
+//    public function andFilterWhere($params){
+//        if($params[2]){
+//            $this->filter[$params[0].$params[1]] = $params[2];
+//        }
+//
+//        return $this;
+//
+//    }
 
-        return $this;
 
-    }
 
-    public function getEntityTypeIdUsedInFrom()
-    {
-        if (empty($this->entityTypeId)) {
-            $this->entityTypeId = $this->getPrimaryTableName();
-        }
-
-        return $this->entityTypeId;
-
-        //return parent::getEntityTypeIdUsedInFrom();
-    }
-
-    protected function getPrimaryTableName()
-    {
-//        Yii::warning($this->modelClass, '$this->modelClass');
-        $modelClass = $this->modelClass;
-        //return $modelClass::tableName();
-        return $modelClass::entityTypeId();
-    }
-
-    protected function prepairParams(){
-        $this->getEntityTypeIdUsedInFrom();
-        $data = [
-            'entityTypeId' => $this->entityTypeId,
-            //Остальные параметры
-        ];
-        $this->params = $data;
-    }
+//    protected function prepairParams(){
+//        $this->getEntityTypeIdUsedInFrom();
+//        $data = [
+//            'entityTypeId' => $this->entityTypeId,
+//            //Остальные параметры
+//        ];
+//        $this->params = $data;
+//    }
 
 //    private function removeDuplicatedModels($models)
 //    {

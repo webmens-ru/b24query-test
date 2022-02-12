@@ -8,6 +8,7 @@
 namespace app\models\b24;
 
 use Yii;
+use yii\base\DynamicModel;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
@@ -561,7 +562,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function getOldAttributes()
     {
-        Yii::warning('getOldAttributes');
+//        Yii::warning('getOldAttributes');
         return $this->_oldAttributes === null ? [] : $this->_oldAttributes;
     }
 
@@ -573,7 +574,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function setOldAttributes($values)
     {
-        Yii::warning('setOldAttributes');
+//        Yii::warning('setOldAttributes');
         $this->_oldAttributes = $values;
     }
 
@@ -588,7 +589,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function getOldAttribute($name)
     {
-        Yii::warning('getOldAttribute');
+//        Yii::warning('getOldAttribute');
         return isset($this->_oldAttributes[$name]) ? $this->_oldAttributes[$name] : null;
     }
 
@@ -1681,7 +1682,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function getAttributeLabel($attribute)
     {
-        Yii::warning('getAttributeLabel');
+//        Yii::warning('getAttributeLabel');
         $labels = $this->attributeLabels();
         if (isset($labels[$attribute])) {
             return $labels[$attribute];

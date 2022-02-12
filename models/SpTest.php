@@ -1,9 +1,9 @@
 <?php
 namespace app\models;
 
-use app\models\b24\SpBase;
+use app\models\b24\SpActiveRecord;
 
-class SpTest extends SpBase {
+class SpTest extends SpActiveRecord {
 
     public static function entityTypeId() {
         return 174;

@@ -7,7 +7,7 @@
 
 namespace app\controllers;
 
-use app\models\b24\DataProvider;
+use app\models\b24\B24DataProvider;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\DataFilter;
@@ -49,6 +49,7 @@ class DataAction extends Action
      * ```
      */
     public $prepareDataProvider;
+
     /**
      * @var callable a PHP callable that will be called to prepare query in prepareDataProvider.
      * Should return $query.
@@ -65,8 +66,9 @@ class DataAction extends Action
      * @since 2.0.42
      */
     public $prepareSearchQuery;
+
     /**
-     * @var DataFilter|null data filter to be used for the search filter composition.
+* @var DataFilter|null data filter to be used for the search filter composition.
      * You must setup this field explicitly in order to enable filter processing.
      * For example:
      *
@@ -89,7 +91,6 @@ class DataAction extends Action
      */
     public $dataFilter;
 
-
     /**
      * @var array|Pagination|false The pagination to be used by [[prepareDataProvider()]].
      * If this is `false`, it means pagination is disabled.
@@ -107,6 +108,8 @@ class DataAction extends Action
      * @since 2.0.45
      */
     public $sort = [];
+
+    public $auth;
 
     /**
      * @return ActiveDataProvider
@@ -127,12 +130,13 @@ class DataAction extends Action
     protected function prepareDataProvider()
     {
         $requestParams = Yii::$app->getRequest()->getBodyParams();
-        Yii::warning($requestParams, '$requestParams 1');
         if (empty($requestParams)) {
             $requestParams = Yii::$app->getRequest()->getQueryParams();
-            Yii::warning($requestParams, '$requestParams 2');
         }
 
+        Yii::warning($requestParams, '$requestParams');
+
+        //#сделать чтобы заработало
         $filter = null;
         if ($this->dataFilter !== null) {
             $this->dataFilter = Yii::createObject($this->dataFilter);
@@ -152,10 +156,11 @@ class DataAction extends Action
         $modelClass = $this->modelClass;
 
         $query = $modelClass::find();
+        //#сделать чтобы заработало
         if (!empty($filter)) {
-            Yii::warning($filter, '$filter');
             $query->andWhere($filter);
         }
+
         if (is_callable($this->prepareSearchQuery)) {
             $query = call_user_func($this->prepareSearchQuery, $query, $requestParams);
         }
@@ -187,12 +192,23 @@ class DataAction extends Action
                 $sort->params = $requestParams;
             }
         }
+        Yii::warning($sort, '$sort');
+        $auth = null;
+        if (is_callable($this->auth)) {
+            $auth = call_user_func($this->auth);
+        }
 
-        return Yii::createObject([
-            'class' => DataProvider::className(),
+        $dataProvider = Yii::createObject([
+            'class' => B24DataProvider::className(),
             'query' => $query,
             'pagination' => $pagination,
             'sort' => $sort,
+            'auth' => $auth,
         ]);
+
+        return [
+            'grid' => $dataProvider,
+            'footer' => []
+        ];
     }
 }

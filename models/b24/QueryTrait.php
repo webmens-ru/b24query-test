@@ -92,7 +92,8 @@ trait QueryTrait
      */
     public function where($condition)
     {
-        $this->where = $condition;
+        $this->where = $this->conditionPrepare($condition);
+        Yii::warning($this->where, '$this->where');
         return $this;
     }
 
@@ -107,14 +108,39 @@ trait QueryTrait
      */
     public function andWhere($condition)
     {
+        \Yii::warning($condition, 'andWhere($condition)');
+        $condition = $this->conditionPrepare($condition);
         if ($this->where === null) {
             $this->where = $condition;
         } else {
-            $this->where = ['and', $this->where, $condition];
+            $this->where = array_merge($this->where, $condition);
         }
-
+        \Yii::warning($this->where, '$this->where3');
         return $this;
     }
+
+    public function conditionPrepare($condition){
+        if(array_key_exists(0, $condition)){
+            if(count($condition)==3){
+                $arr = [];
+                $operator = array_shift($condition);
+                $arr[$operator.$condition[0]] = $condition[1];
+                return $arr;
+            }
+            return [];
+        }else{
+            return $condition;
+        }
+
+    }
+
+//    public function conditionPrepare($condition){
+//        if(count($condition)==3){
+//            $operator = array_shift($condition);
+//            $condition[0] = $operator.$condition[0];
+//        }
+//        return $condition;
+//    }
 
     /**
      * Adds an additional WHERE condition to the existing one.
@@ -189,6 +215,7 @@ trait QueryTrait
      */
     public function andFilterWhere(array $condition)
     {
+//        \Yii::warning('andFilterWhere');
         $condition = $this->filterCondition($condition);
         if ($condition !== []) {
             $this->andWhere($condition);
@@ -235,6 +262,7 @@ trait QueryTrait
         }
 
         if (!isset($condition[0])) {
+            \Yii::warning($condition, 'if (!isset($condition[0]))');
             // hash format: 'column1' => 'value1', 'column2' => 'value2', ...
             foreach ($condition as $name => $value) {
                 if ($this->isEmpty($value)) {
@@ -275,7 +303,9 @@ trait QueryTrait
                 }
                 break;
             default:
+//                \Yii::warning($condition, 'default');
                 if (array_key_exists(1, $condition) && $this->isEmpty($condition[1])) {
+//                    \Yii::warning($condition, 'default1');
                     return [];
                 }
         }
@@ -343,9 +373,18 @@ trait QueryTrait
      * @return $this the query object itself
      * @see orderBy()
      */
-    public function addOrderBy($columns)
+    public function addOrderBy($columns)//['id'=>4]
     {
         $columns = $this->normalizeOrderBy($columns);
+        foreach ($columns as $key=>$value){
+            $temp = [];
+            if($value == SORT_ASC){
+                $temp[$key] = 'ASC';
+            }elseif($value == SORT_DESC){
+                $temp[$key] = 'DESC';
+            }
+            $columns = array_merge($columns, $temp);
+        }
         if ($this->orderBy === null) {
             $this->orderBy = $columns;
         } else {
