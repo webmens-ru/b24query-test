@@ -20,7 +20,6 @@ class B24SpTestSearch extends B24SpTest {
     public function prepareSearchQuery($query, $requestParams){
         Yii::warning($requestParams, 'prepareSearchQuery($query, $requestParams)');
         $this->load($requestParams,'');
-        Yii::warning(ArrayHelper::toArray($this), '$this->load');
         if (!$this->validate()) {
             $query->where('0=1');
             return $query;

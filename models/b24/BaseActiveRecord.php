@@ -24,17 +24,17 @@ use yii\helpers\ArrayHelper;
  *
  * See [[\yii\db\ActiveRecord]] for a concrete implementation.
  *
- * @property-read array $dirtyAttributes The changed attribute values (name-value pairs).
- * @property bool $isNewRecord Whether the record is new and should be inserted when calling [[save()]].
- * @property array $oldAttributes The old attribute values (name-value pairs). Note that the type of this
- * property differs in getter and setter. See [[getOldAttributes()]] and [[setOldAttributes()]] for details.
+ * @property-read array $dirtyAttributes Измененные значения атрибутов (пары имя-значение).
+ * @property bool $isNewRecord Является ли запись новой и должна ли она быть вставлена при вызове [[save()]].
+ * @property array $oldAttributes Старые значения атрибутов (пары имя-значение). Обратите внимание, что тип этого
+ * свойство отличается в геттере и сеттере. Подробнее см. [[getOldAttributes()]] и [[setOldAttributes()]].
  * @property-read mixed $oldPrimaryKey The old primary key value. An array (column name => column value) is
  * returned if the primary key is composite. A string is returned otherwise (null will be returned if the key
  * value is null).
- * @property-read mixed $primaryKey The primary key value. An array (column name => column value) is returned
- * if the primary key is composite. A string is returned otherwise (null will be returned if the key value is
- * null).
- * @property-read array $relatedRecords An array of related records indexed by relation names.
+ * @property-read mixed $primaryKey Старое значение первичного ключа. Массив (имя столбца => значение столбца)
+ * возвращается, если первичный ключ составной. В противном случае возвращается строка (будет возвращено значение null,
+ * если значение ключа равно null).
+ * @property-read array $relatedRecords Массив связанных записей, индексированных по именам отношений.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carsten Brandt <mail@cebe.cc>
@@ -43,103 +43,101 @@ use yii\helpers\ArrayHelper;
 abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
 {
     /**
-     * @event Event an event that is triggered when the record is initialized via [[init()]].
+     * @event Event событие, которое запускается, когда запись инициализируется с помощью [[init()]].
      */
     const EVENT_INIT = 'init';
     /**
-     * @event Event an event that is triggered after the record is created and populated with query result.
+     * @event Event событие, которое запускается после создания записи и заполнения ее результатом запроса.
      */
     const EVENT_AFTER_FIND = 'afterFind';
     /**
-     * @event ModelEvent an event that is triggered before inserting a record.
-     * You may set [[ModelEvent::isValid]] to be `false` to stop the insertion.
+     * @event ModelEvent событие, которое срабатывает перед вставкой записи.
+    * Вы можете установить для [[ModelEvent::isValid]] значение `false`, чтобы остановить вставку.
      */
     const EVENT_BEFORE_INSERT = 'beforeInsert';
     /**
-     * @event AfterSaveEvent an event that is triggered after a record is inserted.
+     * @event AfterSaveEvent событие, которое запускается после вставки записи.
      */
     const EVENT_AFTER_INSERT = 'afterInsert';
     /**
-     * @event ModelEvent an event that is triggered before updating a record.
-     * You may set [[ModelEvent::isValid]] to be `false` to stop the update.
+     * @event ModelEvent событие, которое запускается перед обновлением записи.
+     * Вы можете установить для [[ModelEvent::isValid]] значение `false`, чтобы остановить обновление.
      */
     const EVENT_BEFORE_UPDATE = 'beforeUpdate';
     /**
-     * @event AfterSaveEvent an event that is triggered after a record is updated.
+     * @event AfterSaveEvent событие, которое запускается после обновления записи.
      */
     const EVENT_AFTER_UPDATE = 'afterUpdate';
     /**
-     * @event ModelEvent an event that is triggered before deleting a record.
-     * You may set [[ModelEvent::isValid]] to be `false` to stop the deletion.
+     * @event ModelEvent событие, которое срабатывает перед удалением записи.
+     * Вы можете установить для [[ModelEvent::isValid]] значение `false`, чтобы остановить удаление.
      */
     const EVENT_BEFORE_DELETE = 'beforeDelete';
     /**
-     * @event Event an event that is triggered after a record is deleted.
+     * @event Event событие, которое запускается после удаления записи.
      */
     const EVENT_AFTER_DELETE = 'afterDelete';
     /**
-     * @event Event an event that is triggered after a record is refreshed.
+     * @event Event событие, которое запускается после обновления записи.
      * @since 2.0.8
      */
     const EVENT_AFTER_REFRESH = 'afterRefresh';
 
     /**
-     * @var array attribute values indexed by attribute names
+     * @var array значения атрибутов, индексированные по именам атрибутов
      */
     private $_attributes = [];
     /**
-     * @var array|null old attribute values indexed by attribute names.
-     * This is `null` if the record [[isNewRecord|is new]].
+     * @var array|null старые значения атрибутов, индексированные по именам атрибутов.
+     * Это `null`, если запись [[isNewRecord|новая]].
      */
     private $_oldAttributes;
     /**
-     * @var array related models indexed by the relation names
+     * @var array связанные модели, индексированные по именам отношений
      */
     private $_related = [];
     /**
-     * @var array relation names indexed by their link attributes
+     * @var array имена отношений, индексированные их атрибутами ссылки
      */
     private $_relationsDependencies = [];
 
 
     /**
      * {@inheritdoc}
-     * @return static|null ActiveRecord instance matching the condition, or `null` if nothing matches.
+     * @return static|null Экземпляр ActiveRecord, соответствующий условию, или `null`, если ничего не соответствует.
      */
+    // TODO findOne($condition) нужно ли? так как использует админские доступы
     public static function findOne($condition)
     {
-        Yii::warning('findOne');
         return static::findByCondition($condition)->one();
     }
 
     /**
      * {@inheritdoc}
-     * @return static[] an array of ActiveRecord instances, or an empty array if nothing matches.
+     * @return static[] массив экземпляров ActiveRecord или пустой массив, если ничего не совпадает.
      */
     public static function findAll($condition)
     {
-        Yii::warning('findAll');
         return static::findByCondition($condition)->all();
     }
 
     /**
-     * Finds ActiveRecord instance(s) by the given condition.
-     * This method is internally called by [[findOne()]] and [[findAll()]].
-     * @param mixed $condition please refer to [[findOne()]] for the explanation of this parameter
-     * @return ActiveQueryInterface the newly created [[ActiveQueryInterface|ActiveQuery]] instance.
-     * @throws InvalidConfigException if there is no primary key defined
+     * Находит экземпляры ActiveRecord по заданному условию.
+     * Этот метод вызывается внутренними функциями [[findOne()]] и [[findAll()]]..
+     * @param mixed $condition пожалуйста, обратитесь к [[findOne()]] для объяснения этого параметра
+     * @return ActiveQueryInterface вновь созданный экземпляр [[ActiveQueryInterface|ActiveQuery]].
+     * @throws InvalidConfigException если первичный ключ не определен
      * @internal
      */
     protected static function findByCondition($condition)
     {
-        Yii::warning('findByCondition');
         $query = static::find();
-
+        // TODO Возможно данный код ненужен
         if (!ArrayHelper::isAssociative($condition) && !$condition instanceof ExpressionInterface) {
-            // query by primary key
+            // запрос по первичному ключу
             $primaryKey = static::primaryKey();
             if (isset($primaryKey[0])) {
-                // if condition is scalar, search for a single primary key, if it is array, search for multiple primary key values
+                // если условие скалярное, ищите один первичный ключ, если это массив, ищите несколько значений первичного ключа
                 $condition = [$primaryKey[0] => is_array($condition) ? array_values($condition) : $condition];
             } else {
                 throw new InvalidConfigException('"' . get_called_class() . '" must have a primary key.');
@@ -150,45 +148,43 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Updates the whole table using the provided attribute values and conditions.
+     * Обновляет всю таблицу, используя предоставленные значения атрибутов и условия.
      *
-     * For example, to change the status to be 1 for all customers whose status is 2:
+     * Например, чтобы изменить статус на 1 для всех клиентов со статусом 2:
      *
      * ```php
      * Customer::updateAll(['status' => 1], 'status = 2');
      * ```
      *
-     * @param array $attributes attribute values (name-value pairs) to be saved into the table
-     * @param string|array $condition the conditions that will be put in the WHERE part of the UPDATE SQL.
-     * Please refer to [[Query::where()]] on how to specify this parameter.
-     * @return int the number of rows updated
-     * @throws NotSupportedException if not overridden
+     * @param array $attributes значения атрибутов (пары имя-значение) для сохранения в таблицу
+     * @param string|array $condition условия, которые будут помещены в WHERE часть UPDATE SQL.
+     * Пожалуйста, обратитесь к [[Query::where()]], чтобы узнать, как указать этот параметр.
+     * @return int количество обновленных строк
+     * @throws NotSupportedException если не переопределить
      */
     public static function updateAll($attributes, $condition = '')
     {
-        Yii::warning('updateAll');
         throw new NotSupportedException(__METHOD__ . ' is not supported.');
     }
 
     /**
-     * Updates the whole table using the provided counter changes and conditions.
+     * Обновляет всю таблицу, используя предоставленные изменения счетчика и условия.
      *
-     * For example, to increment all customers' age by 1,
+     * Например, чтобы увеличить возраст всех клиентов на 1,
      *
      * ```php
      * Customer::updateAllCounters(['age' => 1]);
      * ```
      *
-     * @param array $counters the counters to be updated (attribute name => increment value).
-     * Use negative values if you want to decrement the counters.
-     * @param string|array $condition the conditions that will be put in the WHERE part of the UPDATE SQL.
-     * Please refer to [[Query::where()]] on how to specify this parameter.
-     * @return int the number of rows updated
-     * @throws NotSupportedException if not overrided
+     * @param array $counters счетчики, которые необходимо обновить (имя атрибута => значение приращения).
+     * Используйте отрицательные значения, если вы хотите уменьшить счетчики.
+     * @param string|array $condition условия, которые будут помещены в WHERE часть UPDATE SQL.
+     * Пожалуйста, обратитесь к [[Query::where()]], чтобы узнать, какуказать этот параметр.
+     * @return int  количество обновленных строк
+     * @throws NotSupportedException если не переопределить
      */
     public static function updateAllCounters($counters, $condition = '')
     {
-        Yii::warning('updateAllCounters');
         throw new NotSupportedException(__METHOD__ . ' is not supported.');
     }
 
@@ -202,24 +198,23 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      * Customer::deleteAll('status = 3');
      * ```
      *
-     * @param string|array $condition the conditions that will be put in the WHERE part of the DELETE SQL.
-     * Please refer to [[Query::where()]] on how to specify this parameter.
-     * @return int the number of rows deleted
-     * @throws NotSupportedException if not overridden.
+     * @param string|array $condition условия, которые будут помещены в часть WHERE оператора DELETE SQL.
+     * Пожалуйста, обратитесь к [[Query::where()]], чтобы узнать, как указать этот параметр.
+     * @return int количество удаленных строк
+     * @throws NotSupportedException если не переопределить.
      */
     public static function deleteAll($condition = null)
     {
-        Yii::warning('deleteAll');
         throw new NotSupportedException(__METHOD__ . ' is not supported.');
     }
 
     /**
-     * Returns the name of the column that stores the lock version for implementing optimistic locking.
+     * Возвращает имя столбца, в котором хранится версия блокировки для реализации оптимистичной блокировки.
      *
-     * Optimistic locking allows multiple users to access the same record for edits and avoids
-     * potential conflicts. In case when a user attempts to save the record upon some staled data
-     * (because another user has modified the data), a [[StaleObjectException]] exception will be thrown,
-     * and the update or deletion is skipped.
+     * Оптимистическая блокировка позволяет нескольким пользователям получать доступ к одной и той же записи для редактирования и избегает
+     * возможные конфликты. В случае, когда пользователь пытается сохранить запись с некоторыми устаревшими данными
+     * (поскольку другой пользователь изменил данные), будет выдано исключение [[StaleObjectException]],
+     * и обновление или удаление пропускается.
      *
      * Optimistic locking is only supported by [[update()]] and [[delete()]].
      *
@@ -239,18 +234,18 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      * @return string the column name that stores the lock version of a table row.
      * If `null` is returned (default implemented), optimistic locking will not be supported.
      */
+    // TODO optimisticLock() не поддерживается Битрикс24 исключить везде по коду
     public function optimisticLock()
     {
-        Yii::warning('optimisticLock');
         return null;
     }
 
     /**
      * {@inheritdoc}
+     * Проверка на возможность получить значение свойства
      */
     public function canGetProperty($name, $checkVars = true, $checkBehaviors = true)
     {
-        Yii::warning('canGetProperty');
         if (parent::canGetProperty($name, $checkVars, $checkBehaviors)) {
             return true;
         }
@@ -258,17 +253,17 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         try {
             return $this->hasAttribute($name);
         } catch (\Exception $e) {
-            // `hasAttribute()` may fail on base/abstract classes in case automatic attribute list fetching used
+            // `hasAttribute()` может не работать с базовыми/абстрактными классами, если используется автоматическая выборка списка атрибутов.
             return false;
         }
     }
 
     /**
      * {@inheritdoc}
+     * * Проверка на возможность записатб значение свойства
      */
     public function canSetProperty($name, $checkVars = true, $checkBehaviors = true)
     {
-//        Yii::warning('canSetProperty');
         if (parent::canSetProperty($name, $checkVars, $checkBehaviors)) {
             return true;
         }
@@ -276,23 +271,22 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         try {
             return $this->hasAttribute($name);
         } catch (\Exception $e) {
-            // `hasAttribute()` may fail on base/abstract classes in case automatic attribute list fetching used
+            // `hasAttribute()` может не работать с базовыми/абстрактными классами, если используется автоматическая выборка списка атрибутов
             return false;
         }
     }
 
     /**
-     * PHP getter magic method.
-     * This method is overridden so that attributes and related objects can be accessed like properties.
+     * PHP Магический метод геттера.
+     * Этот метод переопределен, чтобы к атрибутам и связанным объектам можно было получить доступ как к свойствам.
      *
-     * @param string $name property name
-     * @throws InvalidArgumentException if relation name is wrong
+     * @param string $name Имя свойства
+     * @throws InvalidArgumentException если имя отношения неверно
      * @return mixed property value
      * @see getAttribute()
      */
     public function __get($name)
     {
-        Yii::warning('__get');
         if (isset($this->_attributes[$name]) || array_key_exists($name, $this->_attributes)) {
             return $this->_attributes[$name];
         }
@@ -314,14 +308,13 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * PHP setter magic method.
-     * This method is overridden so that AR attributes can be accessed like properties.
+     * PHP Магический метод сеттера.
+     * Этот метод переопределен, чтобы к атрибутам AR можно было получить доступ как к свойствам.
      * @param string $name property name
      * @param mixed $value property value
      */
     public function __set($name, $value)
     {
-        Yii::warning('__set');
         if ($this->hasAttribute($name)) {
             if (
                 !empty($this->_relationsDependencies[$name])
@@ -336,14 +329,13 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Checks if a property value is null.
-     * This method overrides the parent implementation by checking if the named attribute is `null` or not.
-     * @param string $name the property name or the event name
-     * @return bool whether the property value is null
+     * Проверяет, является ли значение свойства null.
+     * Этот метод переопределяет родительскую реализацию, проверяя, является ли именованный атрибут нулевым или нет.
+     * @param string $name имя свойства или имя события
+     * @return bool является ли значение свойства нулевым
      */
     public function __isset($name)
     {
-        Yii::warning('__isset');
         try {
             return $this->__get($name) !== null;
         } catch (\Exception $t) {
@@ -354,14 +346,12 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Sets a component property to be null.
-     * This method overrides the parent implementation by clearing
-     * the specified attribute value.
-     * @param string $name the property name or the event name
+     * Устанавливает свойство компонента в значение null.
+     * Этот метод переопределяет родительскую реализацию, очищая указанное значение атрибута.
+     * @param string $name имя свойства или имя события
      */
     public function __unset($name)
     {
-        Yii::warning('__unset');
         if ($this->hasAttribute($name)) {
             unset($this->_attributes[$name]);
             if (!empty($this->_relationsDependencies[$name])) {
@@ -375,15 +365,15 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Declares a `has-one` relation.
-     * The declaration is returned in terms of a relational [[ActiveQuery]] instance
-     * through which the related record can be queried and retrieved back.
+     * Объявляет отношение has-one.
+     * Объявление возвращается в терминах реляционного экземпляра [[ActiveQuery]].
+     * через который связанная запись может быть запрошена и получена обратно.
      *
-     * A `has-one` relation means that there is at most one related record matching
-     * the criteria set by this relation, e.g., a customer has one country.
+     * Отношение «имеет один» означает, что существует не более одной соответствующей записи.
+     * критерии, установленные этим отношением, например, клиент имеет одну страну.
      *
-     * For example, to declare the `country` relation for `Customer` class, we can write
-     * the following code in the `Customer` class:
+     * Например, чтобы объявить отношение «страна» для класса «Клиент», мы можем написать
+     * следующий код в классе `Customer`:
      *
      * ```php
      * public function getCountry()
@@ -392,28 +382,27 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      * }
      * ```
      *
-     * Note that in the above, the 'id' key in the `$link` parameter refers to an attribute name
-     * in the related class `Country`, while the 'country_id' value refers to an attribute name
-     * in the current AR class.
+     * Обратите внимание, что в приведенном выше примере ключ «id» в параметре «$link» относится к имени атрибута.
+     * в родственном классе `Country`, тогда как значение 'country_id' относится к имени атрибута
+     * в текущем классе AR.
      *
-     * Call methods declared in [[ActiveQuery]] to further customize the relation.
+     * Вызывайте методы, объявленные в [[ActiveQuery]], для дальнейшей настройки отношения.
      *
-     * @param string $class the class name of the related record
-     * @param array $link the primary-foreign key constraint. The keys of the array refer to
-     * the attributes of the record associated with the `$class` model, while the values of the
-     * array refer to the corresponding attributes in **this** AR class.
-     * @return ActiveQueryInterface the relational query object.
+     * @param string $class имя класса связанной записи
+     * @param array $link ограничение первичного внешнего ключа. Ключи массива относятся к
+     * атрибуты записи, связанные с моделью `$class`, в то время как значения
+     * Массив ссылается на соответствующие атрибуты в **этом** классе AR.
+     * @return ActiveQueryInterface объект реляционного запроса.
      */
     public function hasOne($class, $link)
     {
-        Yii::warning('hasOne');
         return $this->createRelationQuery($class, $link, false);
     }
 
     /**
-     * Declares a `has-many` relation.
-     * The declaration is returned in terms of a relational [[ActiveQuery]] instance
-     * through which the related record can be queried and retrieved back.
+     * Объявляет отношение has-many.
+     * Объявление возвращается в терминах реляционного экземпляра [[ActiveQuery]].
+     * через который связанная запись может быть запрошена и получена обратно.
      *
      * A `has-many` relation means that there are multiple related records matching
      * the criteria set by this relation, e.g., a customer has many orders.
@@ -442,12 +431,11 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function hasMany($class, $link)
     {
-        Yii::warning('hasMany');
         return $this->createRelationQuery($class, $link, true);
     }
 
     /**
-     * Creates a query instance for `has-one` or `has-many` relation.
+     * Создает экземпляр запроса для отношения `has-one` или `has-many`.
      * @param string $class the class name of the related record.
      * @param array $link the primary-foreign key constraint.
      * @param bool $multiple whether this query represents a relation to more than one record.
@@ -458,7 +446,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     protected function createRelationQuery($class, $link, $multiple)
     {
-        Yii::warning('createRelationQuery');
         /* @var $class ActiveRecordInterface */
         /* @var $query ActiveQuery */
         $query = $class::find();
@@ -469,15 +456,14 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Populates the named relation with the related records.
-     * Note that this method does not check if the relation exists or not.
-     * @param string $name the relation name, e.g. `orders` for a relation defined via `getOrders()` method (case-sensitive).
-     * @param ActiveRecordInterface|array|null $records the related records to be populated into the relation.
+     * Заполняет именованное отношение связанными записями.
+     * Обратите внимание, что этот метод не проверяет, существует ли отношение или нет.
+     * @param string $name имя отношения, например. `orders` для отношения, определенного с помощью метода `getOrders()` (с учетом регистра).
+     * @param ActiveRecordInterface|array|null $records связанные записи, которые должны быть заполнены в отношении.
      * @see getRelation()
      */
     public function populateRelation($name, $records)
     {
-        Yii::warning('populateRelation');
         foreach ($this->_relationsDependencies as &$relationNames) {
             unset($relationNames[$name]);
         }
@@ -486,63 +472,58 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Check whether the named relation has been populated with records.
-     * @param string $name the relation name, e.g. `orders` for a relation defined via `getOrders()` method (case-sensitive).
-     * @return bool whether relation has been populated with records.
+     * Проверяет, заполнено ли именованное отношение записями.
+     * @param string $name имя отношения, например. `orders` для отношения, определенного с помощью метода `getOrders()` (с учетом регистра).
+     * @return bool было ли отношение заполнено записями.
      * @see getRelation()
      */
     public function isRelationPopulated($name)
     {
-        Yii::warning('isRelationPopulated');
         return array_key_exists($name, $this->_related);
     }
 
     /**
-     * Returns all populated related records.
-     * @return array an array of related records indexed by relation names.
+     * Возвращает все заполненные связанные записи.
+     * @return array массив связанных записей, индексированных по именам отношений.
      * @see getRelation()
      */
     public function getRelatedRecords()
     {
-        Yii::warning('getRelatedRecords');
         return $this->_related;
     }
 
     /**
-     * Returns a value indicating whether the model has an attribute with the specified name.
-     * @param string $name the name of the attribute
-     * @return bool whether the model has an attribute with the specified name.
+     * Возвращает значение, указывающее, есть ли в модели атрибут с указанным именем.
+     * @param string $name имя атрибута
+     * @return bool есть ли в модели атрибут с указанным именем.
      */
     public function hasAttribute($name)
     {
-//        Yii::warning('hasAttribute');
         return isset($this->_attributes[$name]) || in_array($name, $this->attributes(), true);
     }
 
     /**
-     * Returns the named attribute value.
-     * If this record is the result of a query and the attribute is not loaded,
-     * `null` will be returned.
-     * @param string $name the attribute name
-     * @return mixed the attribute value. `null` if the attribute is not set or does not exist.
+     * Возвращает значение именованного атрибута.
+     * Если эта запись является результатом запроса и атрибут не загружен,
+     * будет возвращен `null`.
+     * @param string $name имя атрибута
+     * @return mixed значение атрибута. `null`, если атрибут не установлен или не существует.
      * @see hasAttribute()
      */
     public function getAttribute($name)
     {
-        Yii::warning('getAttribute');
         return isset($this->_attributes[$name]) ? $this->_attributes[$name] : null;
     }
 
     /**
-     * Sets the named attribute value.
+     * Задает значение именованного атрибута.
      * @param string $name the attribute name
      * @param mixed $value the attribute value.
-     * @throws InvalidArgumentException if the named attribute does not exist.
+     * @throws InvalidArgumentException если указанный атрибут не существует.
      * @see hasAttribute()
      */
     public function setAttribute($name, $value)
     {
-        Yii::warning('setAttribute');
         if ($this->hasAttribute($name)) {
             if (
                 !empty($this->_relationsDependencies[$name])
@@ -557,44 +538,41 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Returns the old attribute values.
-     * @return array the old attribute values (name-value pairs)
-     */
+     * Возвращает старые значения атрибутов.
+     * @return array старые значения атрибутов (пары имя-значение)
+*/
     public function getOldAttributes()
     {
-//        Yii::warning('getOldAttributes');
         return $this->_oldAttributes === null ? [] : $this->_oldAttributes;
     }
 
     /**
-     * Sets the old attribute values.
-     * All existing old attribute values will be discarded.
-     * @param array|null $values old attribute values to be set.
-     * If set to `null` this record is considered to be [[isNewRecord|new]].
+     * Устанавливает старые значения атрибутов.
+     * Все существующие старые значения атрибутов будут удалены.
+     * @param array|null $values установить старые значения атрибутов.
+     * Если установлено значение `null`, эта запись считается [[isNewRecord|новой]].
      */
     public function setOldAttributes($values)
     {
-//        Yii::warning('setOldAttributes');
         $this->_oldAttributes = $values;
     }
 
     /**
-     * Returns the old value of the named attribute.
-     * If this record is the result of a query and the attribute is not loaded,
-     * `null` will be returned.
+     * Возвращает старое значение именованного атрибута.
+     * Если эта запись является результатом запроса и атрибут не загружен,
+     * будет возвращен `null`.
      * @param string $name the attribute name
-     * @return mixed the old attribute value. `null` if the attribute is not loaded before
-     * or does not exist.
+     * @return mixed старое значение атрибута. `null`, если атрибут не был загружен ранее
+     * или не существует.
      * @see hasAttribute()
      */
     public function getOldAttribute($name)
     {
-//        Yii::warning('getOldAttribute');
         return isset($this->_oldAttributes[$name]) ? $this->_oldAttributes[$name] : null;
     }
 
     /**
-     * Sets the old value of the named attribute.
+     * Устанавливает старое значение именованного атрибута.
      * @param string $name the attribute name
      * @param mixed $value the old attribute value.
      * @throws InvalidArgumentException if the named attribute does not exist.
@@ -602,7 +580,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function setOldAttribute($name, $value)
     {
-        Yii::warning('setOldAttribute');
         if (isset($this->_oldAttributes[$name]) || $this->hasAttribute($name)) {
             $this->_oldAttributes[$name] = $value;
         } else {
@@ -611,28 +588,26 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Marks an attribute dirty.
-     * This method may be called to force updating a record when calling [[update()]],
-     * even if there is no change being made to the record.
+     * Помечает атрибут как грязный.
+     * Этот метод может вызываться для принудительного обновления записи при вызове [[update()]],
+     * даже если в запись не вносятся изменения.
      * @param string $name the attribute name
      */
     public function markAttributeDirty($name)
     {
-        Yii::warning('markAttributeDirty');
         unset($this->_oldAttributes[$name]);
     }
 
     /**
-     * Returns a value indicating whether the named attribute has been changed.
+     * Возвращает значение, указывающее, был ли изменен именованный атрибут.
      * @param string $name the name of the attribute.
-     * @param bool $identical whether the comparison of new and old value is made for
-     * identical values using `===`, defaults to `true`. Otherwise `==` is used for comparison.
-     * This parameter is available since version 2.0.4.
-     * @return bool whether the attribute has been changed
+     * @param bool $identical производится ли сравнение нового и старого значения для
+     * идентичные значения с использованием `===`, по умолчанию `true`. В противном случае для сравнения используется `==`.
+     * Этот параметр доступен с версии 2.0.4.
+     * @return bool был ли изменен атрибут
      */
     public function isAttributeChanged($name, $identical = true)
     {
-        Yii::warning('isAttributeChanged');
         if (isset($this->_attributes[$name], $this->_oldAttributes[$name])) {
             if ($identical) {
                 return $this->_attributes[$name] !== $this->_oldAttributes[$name];
@@ -645,17 +620,16 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Returns the attribute values that have been modified since they are loaded or saved most recently.
+     * Возвращает значения атрибутов, которые были изменены с момента их последней загрузки или сохранения.
      *
-     * The comparison of new and old values is made for identical values using `===`.
+     * Сравнение новых и старых значений производится для идентичных значений с помощью `===`.
      *
-     * @param string[]|null $names the names of the attributes whose values may be returned if they are
-     * changed recently. If null, [[attributes()]] will be used.
-     * @return array the changed attribute values (name-value pairs)
+     * @param string[]|null $names имена атрибутов, значения которых могут быть возвращены, если они были
+     * недавно изменены. Если null, будет использоваться [[attributes()]].
+     * @return array измененные значения атрибутов (пары имя-значение)
      */
     public function getDirtyAttributes($names = null)
     {
-        Yii::warning('getDirtyAttributes');
         if ($names === null) {
             $names = $this->attributes();
         }
@@ -679,7 +653,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Saves the current record.
+     * Сохраняет текущую запись.
      *
      * This method will call [[insert()]] when [[isNewRecord]] is `true`, or [[update()]]
      * when [[isNewRecord]] is `false`.
@@ -693,12 +667,12 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      * $customer->save();
      * ```
      *
-     * @param bool $runValidation whether to perform validation (calling [[validate()]])
-     * before saving the record. Defaults to `true`. If the validation fails, the record
-     * will not be saved to the database and this method will return `false`.
-     * @param array $attributeNames list of attribute names that need to be saved. Defaults to null,
-     * meaning all attributes that are loaded from DB will be saved.
-     * @return bool whether the saving succeeded (i.e. no validation errors occurred).
+     * @param bool $runValidation выполнять ли проверку (вызов [[validate()]])
+     * перед сохранением записи. По умолчанию «истина». Если проверка не пройдена, запись
+     * не будет сохранен в базе данных, и этот метод вернет false.
+     * @param array $attributeNames список имен атрибутов, которые необходимо сохранить. По умолчанию ноль,
+     * означает, что все атрибуты, загруженные из БД, будут сохранены.
+     * @return bool успешно ли выполнено сохранение (т. е. ошибок проверки не произошло)
      */
     public function save($runValidation = true, $attributeNames = null)
     {
@@ -711,9 +685,9 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Saves the changes to this active record into the associated database table.
+     * Сохраняет изменения этой активной записи в связанной таблице базы данных.
      *
-     * This method performs the following steps in order:
+     * Этот метод выполняет следующие шаги по порядку:
      *
      * 1. call [[beforeValidate()]] when `$runValidation` is `true`. If [[beforeValidate()]]
      *    returns `false`, the rest of the steps will be skipped;
@@ -739,9 +713,9 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      * $customer->update();
      * ```
      *
-     * Note that it is possible the update does not affect any row in the table.
-     * In this case, this method will return 0. For this reason, you should use the following
-     * code to check if update() is successful or not:
+     * Обратите внимание, что обновление может не повлиять ни на одну строку в таблице.
+     * В этом случае этот метод вернет 0. По этой причине вы должны использовать следующее
+     * код для проверки успешности update():
      *
      * ```php
      * if ($customer->update() !== false) {
@@ -773,7 +747,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Updates the specified attributes.
+     * Обновляет указанные атрибуты.
      *
      * This method is a shortcut to [[update()]] when data validation is not needed
      * and only a small set attributes need to be updated.
@@ -789,7 +763,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function updateAttributes($attributes)
     {
-        Yii::warning('updateAttributes');
         $attrs = [];
         foreach ($attributes as $name => $value) {
             if (is_int($name)) {
@@ -943,7 +916,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function getIsNewRecord()
     {
-        Yii::warning('getIsNewRecord');
         return $this->_oldAttributes === null;
     }
 
@@ -954,7 +926,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function setIsNewRecord($value)
     {
-        Yii::warning('setIsNewRecord');
         $this->_oldAttributes = $value ? null : $this->_attributes;
     }
 
@@ -965,7 +936,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function init()
     {
-//        Yii::warning('init');
         parent::init();
         $this->trigger(self::EVENT_INIT);
     }
@@ -978,7 +948,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function afterFind()
     {
-//        Yii::warning('afterFind');
         $this->trigger(self::EVENT_AFTER_FIND);
     }
 
@@ -1008,7 +977,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function beforeSave($insert)
     {
-        Yii::warning('beforeSave');
         $event = new ModelEvent();
         $this->trigger($insert ? self::EVENT_BEFORE_INSERT : self::EVENT_BEFORE_UPDATE, $event);
 
@@ -1035,7 +1003,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function afterSave($insert, $changedAttributes)
     {
-        Yii::warning('afterSave');
         $this->trigger($insert ? self::EVENT_AFTER_INSERT : self::EVENT_AFTER_UPDATE, new AfterSaveEvent([
             'changedAttributes' => $changedAttributes,
         ]));
@@ -1063,7 +1030,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function beforeDelete()
     {
-        Yii::warning('beforeDelete');
         $event = new ModelEvent();
         $this->trigger(self::EVENT_BEFORE_DELETE, $event);
 
@@ -1078,22 +1044,20 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function afterDelete()
     {
-        Yii::warning('afterDelete');
         $this->trigger(self::EVENT_AFTER_DELETE);
     }
 
     /**
-     * Repopulates this active record with the latest data.
+     * Заполняет эту активную запись последними данными.
      *
-     * If the refresh is successful, an [[EVENT_AFTER_REFRESH]] event will be triggered.
-     * This event is available since version 2.0.8.
+     * Если обновление прошло успешно, будет запущено событие [[EVENT_AFTER_REFRESH]].
+     * Это событие доступно с версии 2.0.8.
      *
      * @return bool whether the row still exists in the database. If `true`, the latest data
      * will be populated to this active record. Otherwise, this record will remain unchanged.
      */
     public function refresh()
     {
-        Yii::warning('refresh');
         /* @var $record BaseActiveRecord */
         $record = static::findOne($this->getPrimaryKey(true));
         return $this->refreshInternal($record);
@@ -1137,15 +1101,14 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Returns a value indicating whether the given active record is the same as the current one.
-     * The comparison is made by comparing the table names and the primary key values of the two active records.
-     * If one of the records [[isNewRecord|is new]] they are also considered not equal.
+     * Возвращает значение, указывающее, совпадает ли данная активная запись с текущей.
+     * Сравнение выполняется путем сравнения имен таблиц и значений первичного ключа двух активных записей.
+     * Если одна из записей [[isNewRecord|новая]] также считается не равной.
      * @param ActiveRecordInterface $record record to compare to
      * @return bool whether the two active records refer to the same row in the same database table.
      */
     public function equals($record)
     {
-        Yii::warning('equals');
         if ($this->getIsNewRecord() || $record->getIsNewRecord()) {
             return false;
         }
@@ -1154,20 +1117,19 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Returns the primary key value(s).
-     * @param bool $asArray whether to return the primary key value as an array. If `true`,
-     * the return value will be an array with column names as keys and column values as values.
-     * Note that for composite primary keys, an array will always be returned regardless of this parameter value.
-     * @property mixed The primary key value. An array (column name => column value) is returned if
-     * the primary key is composite. A string is returned otherwise (null will be returned if
-     * the key value is null).
-     * @return mixed the primary key value. An array (column name => column value) is returned if the primary key
-     * is composite or `$asArray` is `true`. A string is returned otherwise (null will be returned if
-     * the key value is null).
+     * Возвращает значение(я) первичного ключа.
+     * @param bool $asArray следует ли возвращать значение первичного ключа в виде массива. Если "правда",
+     * возвращаемое значение будет массивом с именами столбцов в качестве ключей и значениями столбцов в качестве значений.
+     * Обратите внимание, что для составных первичных ключей всегда будет возвращаться массив независимо от значения этого параметра.
+     * @property mixed The значение первичного ключа. Массив (имя столбца => значение столбца) возвращается, если
+     * первичный ключ составной. В противном случае возвращается строка (если
+     * значение ключа равно null).
+     * @return mixed значение первичного ключа. Массив (имя столбца => значение столбца) возвращается, если первичный ключ
+     * является составным или `$asArray` равно `true`. В противном случае возвращается строка (если
+     * значение ключа равно null).
      */
     public function getPrimaryKey($asArray = false)
     {
-        Yii::warning('getPrimaryKey');
         $keys = static::primaryKey();
         if (!$asArray && count($keys) === 1) {
             return isset($this->_attributes[$keys[0]]) ? $this->_attributes[$keys[0]] : null;
@@ -1182,7 +1144,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Returns the old primary key value(s).
+     * Возвращает старое значение(я) первичного ключа.
      * This refers to the primary key value that is populated into the record
      * after executing a find method (e.g. find(), findOne()).
      * The value remains unchanged even if the primary key attribute is manually assigned with a different value.
@@ -1217,7 +1179,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Populates an active record object using a row of data from the database/storage.
+     * Заполняет объект активной записи, используя строку данных из базы данных/хранилища.
      *
      * This is an internal method meant to be called to create active record objects after
      * fetching data from the database. It is mainly used by [[ActiveQuery]] to populate
@@ -1230,68 +1192,71 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      * created by [[instantiate()]] beforehand.
      * @param array $row attribute values (name => value)
      */
-    public static function populateRecord($record, $row)
-    {
-
-//        Yii::warning('populateRecord');
-//        Yii::warning($row, '$row');
-        //$columns = array_flip($record->attributes());
-        //Yii::warning($columns, 'populateRecord($record, $row)');
-        foreach ($row as $name => $value) {
+    // TODO Изучить populateRecord($record, $row) возможно даже оставить не меняя
+//    оригинал
+//    public static function populateRecord($record, $row)
+//    {
+//        $columns = array_flip($record->attributes());
+//        foreach ($row as $name => $value) {
 //            if (isset($columns[$name])) {
 //                $record->_attributes[$name] = $value;
-            //} else
-//            Yii::warning([$name, $value], '$name, $value');
-            if ($record->canSetProperty($name)) {
+//            } elseif ($record->canSetProperty($name)) {
+//                $record->$name = $value;
+//            }
+//        }
+//        $record->_oldAttributes = $record->_attributes;
+//        $record->_related = [];
+//        $record->_relationsDependencies = [];
+//    }
 
-                //$record->canSetProperty($name);
+
+    public static function populateRecord($record, $row)
+    {
+        foreach ($row as $name => $value) {
+            if ($record->canSetProperty($name)) {
                 $record->$name = $value;
             }
         }
-//        Yii::warning(ArrayHelper::toArray($record), '$record1');
-        //Yii::warning($record->_attributes, '$record->_attributes');
         $record->_oldAttributes = $record->_attributes;
         $record->_related = [];
         $record->_relationsDependencies = [];
-//        Yii::warning(ArrayHelper::toArray($record), '$record');
     }
 
     /**
-     * Creates an active record instance.
+     * Создает экземпляр активной записи.
      *
-     * This method is called together with [[populateRecord()]] by [[ActiveQuery]].
-     * It is not meant to be used for creating new records directly.
+     * его метод вызывается вместе с [[populateRecord()]] с помощью [[ActiveQuery]].
+     * Он не предназначен для непосредственного создания новых записей.
      *
-     * You may override this method if the instance being created
-     * depends on the row data to be populated into the record.
-     * For example, by creating a record based on the value of a column,
-     * you may implement the so-called single-table inheritance mapping.
-     * @param array $row row data to be populated into the record.
-     * @return static the newly created active record
+     * Вы можете переопределить этот метод, если создаваемый экземпляр
+     * зависит от данных строки, которые должны быть заполнены в записи.
+     * Например, создав запись на основе значения столбца,
+     * вы можете реализовать так называемое отображение наследования одной таблицы.
+     * @param array $row данные строки, которые должны быть заполнены в записи.
+     * @return static вновь созданная активная запись
      */
     public static function instantiate($row)
     {
-//        Yii::warning('instantiate');
         return new static();
     }
 
     /**
-     * Returns whether there is an element at the specified offset.
+     * Возвращает, есть ли элемент по указанному смещению.
      * This method is required by the interface [[\ArrayAccess]].
      * @param mixed $offset the offset to check on
      * @return bool whether there is an element at the specified offset.
      */
     #[\ReturnTypeWillChange]
+    // TODO Изучить что это вообще такое offsetExists($offset)
     public function offsetExists($offset)
     {
-        Yii::warning('offsetExists');
         return $this->__isset($offset);
     }
 
     /**
-     * Returns the relation object with the specified name.
-     * A relation is defined by a getter method which returns an [[ActiveQueryInterface]] object.
-     * It can be declared in either the Active Record class itself or one of its behaviors.
+     * Возвращает объект отношения с указанным именем.
+     * Отношение определяется методом получения, который возвращает объект [[ActiveQueryInterface]].
+     * Он может быть объявлен либо в самом классе Active Record, либо в одном из его поведений.
      * @param string $name the relation name, e.g. `orders` for a relation defined via `getOrders()` method (case-sensitive).
      * @param bool $throwException whether to throw exception if the relation does not exist.
      * @return ActiveQueryInterface|ActiveQuery the relational query object. If the relation does not exist
@@ -1300,7 +1265,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function getRelation($name, $throwException = true)
     {
-        Yii::warning('getRelation');
         $getter = 'get' . $name;
         try {
             // the relation could be defined in a behavior
@@ -1337,12 +1301,12 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Establishes the relationship between two models.
+     * Устанавливает связь между двумя моделями.
      *
-     * The relationship is established by setting the foreign key value(s) in one model
-     * to be the corresponding primary key value(s) in the other model.
-     * The model with the foreign key will be saved into database **without** performing validation
-     * and **without** events/behaviors.
+     * Связь устанавливается путем установки значений внешнего ключа в одной модели.
+     * быть соответствующим значением первичного ключа в другой модели.
+     * Модель с внешним ключом будет сохранена в базе данных **без** проверки
+     * и **без** событий/поведений.
      *
      * If the relationship involves a junction table, a new row will be inserted into the
      * junction table which contains the primary key values from both models.
@@ -1437,7 +1401,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Destroys the relationship between two models.
+     * Разрушает отношения между двумя моделями.
      *
      * The model with the foreign key of the relationship will be deleted if `$delete` is `true`.
      * Otherwise, the foreign key will be set `null` and the model will be saved without validation.
@@ -1543,7 +1507,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Destroys the relationship in current model.
+     * Уничтожает отношения в текущей модели.
      *
      * The model with the foreign key of the relationship will be deleted if `$delete` is `true`.
      * Otherwise, the foreign key will be set `null` and the model will be saved without validation.
@@ -1657,13 +1621,12 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Returns a value indicating whether the given set of attributes represents the primary key for this model.
+     * Возвращает значение, указывающее, представляет ли данный набор атрибутов первичный ключ для этой модели.
      * @param array $keys the set of attributes to check
      * @return bool whether the given set of attributes represents the primary key for this model
      */
     public static function isPrimaryKey($keys)
     {
-        Yii::warning('isPrimaryKey');
         $pks = static::primaryKey();
         if (count($keys) === count($pks)) {
             return count(array_intersect($keys, $pks)) === count($pks);
@@ -1673,8 +1636,8 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Returns the text label for the specified attribute.
-     * If the attribute looks like `relatedModel.attribute`, then the attribute will be received from the related model.
+     * Возвращает текстовую метку для указанного атрибута.
+     * Если атрибут выглядит как `relatedModel.attribute`, то атрибут будет получен из связанной модели.
      * @param string $attribute the attribute name
      * @return string the attribute label
      * @see generateAttributeLabel()
@@ -1716,8 +1679,8 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Returns the text hint for the specified attribute.
-     * If the attribute looks like `relatedModel.attribute`, then the attribute will be received from the related model.
+     * Возвращает текстовую подсказку для указанного атрибута.
+     * Если атрибут выглядит как `relatedModel.attribute`, то атрибут будет получен из связанной модели.
      * @param string $attribute the attribute name
      * @return string the attribute hint
      * @see attributeHints()
@@ -1761,20 +1724,28 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     /**
      * {@inheritdoc}
      *
-     * The default implementation returns the names of the columns whose values have been populated into this record.
+     * Реализация по умолчанию возвращает имена столбцов, значения которых были заполнены в этой записи.
      */
+    //TODO Изучить fields() и исправить текущую
+//    public function fields()
+//    {
+//        $fields = array_keys($this->_attributes);
+//
+//        return array_combine($fields, $fields);
+//    }
+
+//TODO Переписать function fields() с учетом атрибутов
     public function fields()
     {
-//        Yii::warning('fields 1759');
-        $fields = ['id'=>'id', 'title'=>'title'];//array_keys($this->_attributes);
+//        $fields = ['id'=>'id', 'title'=>'title'];//array_keys($this->_attributes);
 //        Yii::warning(array_combine($fields, $fields), 'array_combine($fields, $fields)');
-        return array_combine($fields, $fields);
+        return [];// array_combine($fields, $fields);
     }
 
     /**
      * {@inheritdoc}
      *
-     * The default implementation returns the names of the relations that have been populated into this record.
+     * Реализация по умолчанию возвращает имена отношений, которые были заполнены в этой записи.
      */
     public function extraFields()
     {
@@ -1785,9 +1756,9 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Sets the element value at the specified offset to null.
-     * This method is required by the SPL interface [[\ArrayAccess]].
-     * It is implicitly called when you use something like `unset($model[$offset])`.
+     * Устанавливает значение элемента по указанному смещению равным нулю.
+     * Этот метод требуется для интерфейса SPL [[\ArrayAccess]].
+     * Он вызывается неявно, когда вы используете что-то вроде `unset($model[$offset])`.
      * @param mixed $offset the offset to unset element
      */
     public function offsetUnset($offset)
@@ -1801,7 +1772,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Resets dependent related models checking if their links contain specific attribute.
+     * Сбрасывает зависимые связанные модели, проверяя, содержат ли их ссылки определенный атрибут.
      * @param string $attribute The changed attribute name.
      */
     private function resetDependentRelations($attribute)
@@ -1814,7 +1785,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     }
 
     /**
-     * Sets relation dependencies for a property
+     * Устанавливает зависимости отношения для свойства
      * @param string $name property name
      * @param ActiveQueryInterface $relation relation instance
      * @param string|null $viaRelationName intermediate relation

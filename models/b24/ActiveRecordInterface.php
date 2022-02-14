@@ -465,9 +465,6 @@ interface ActiveRecordInterface extends StaticInstanceInterface
      */
     public function unlink($name, $model, $delete = false);
 
-    /**
-     * Returns the connection used by this AR class.
-     * @return mixed the database connection used by this AR class.
-     */
-    public static function getDb();
+    //TODO public static function getAuth(); или protected
+    public static function getAuth();
 }

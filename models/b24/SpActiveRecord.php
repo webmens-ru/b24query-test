@@ -3,7 +3,10 @@
 namespace app\models\b24;
 
 //use yii\base\Model;
+use Bitrix24\B24Object;
+use wm\b24tools\b24Tools;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 
 class SpActiveRecord extends \app\models\b24\ActiveRecord
@@ -17,7 +20,10 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
     {
         return 'crm.item.list';
     }
-
+    public static function fieldsMethod()
+    {
+        return 'crm.item.fields';
+    }
 
     public $id;
     public $xmlId;
@@ -154,8 +160,27 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
      */
     public function attributes()
     {
-        // TODO loadDefaultValues($skipIfSet = true)
-        //  Переписать для b24
-        return array_keys(static::getTableSchema()->columns);
+        return array_keys($this->getTableSchema()->columns);
     }
+
+    public function getTableSchema()
+    {
+        $cache = Yii::$app->cache;
+        $key = static::fieldsMethod()._.static::entityTypeId();
+        $cache->getOrSet($key, function () {
+            return $this->internalGetTableSchema();
+        }, 60);
+    }
+
+    public function internalGetTableSchema(){
+        $b24Obj = self::getConnect();
+        $fields = $b24Obj->client->call(
+            static::fieldsMethod(), ['entityTypeId' => static::entityTypeId()]
+        );
+        return ArrayHelper::getValue(Yii::createObject([
+            'class' => TableSchema::className(),
+            'columns' => $fields,
+        ]), 'result.fields');
+    }
+
 }

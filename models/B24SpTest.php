@@ -1,15 +1,19 @@
 <?php
+
 namespace app\models;
 
 use app\models\b24\SpActiveRecord;
 
-class B24SpTest extends SpActiveRecord {
-    public static function entityTypeId() {
+class B24SpTest extends SpActiveRecord
+{
+    public static function entityTypeId()
+    {
         return 174;
     }
 
     //переделать
-    public function rules() {
+    public function rules()
+    {
         $parentRules = parent::rules();
         $rules = [];
         return array_merge($parentRules, $rules);
@@ -27,11 +31,13 @@ class B24SpTest extends SpActiveRecord {
 
     public function fields()
     {
+        //TODO function fields() ошибка  'test' => 'test'
         return [
             'id',
-            'title'
+            'title',
+            'opened',
+            'test' => 'test'
         ];
-        //return parent::fields();
     }
 
     /**
@@ -40,6 +46,10 @@ class B24SpTest extends SpActiveRecord {
      */
     public function attributes()
     {
-        return ['id', 'title'];
+        return [
+            'id',
+            'title',
+            'opened'
+        ];
     }
 }

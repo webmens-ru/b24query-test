@@ -7,6 +7,8 @@
 
 namespace app\models\b24;
 
+use Bitrix24\B24Object;
+use wm\b24tools\b24Tools;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
@@ -80,28 +82,9 @@ use yii\helpers\StringHelper;
 class ActiveRecord extends BaseActiveRecord
 {
     /**
-     * The insert operation. This is mainly used when overriding [[transactions()]] to specify which operations are transactional.
-     */
-    const OP_INSERT = 0x01;
-    /**
-     * The update operation. This is mainly used when overriding [[transactions()]] to specify which operations are transactional.
-     */
-    const OP_UPDATE = 0x02;
-    /**
-     * The delete operation. This is mainly used when overriding [[transactions()]] to specify which operations are transactional.
-     */
-    const OP_DELETE = 0x04;
-    /**
-     * All three operations: insert, update, delete.
-     * This is a shortcut of the expression: OP_INSERT | OP_UPDATE | OP_DELETE.
-     */
-    const OP_ALL = 0x07;
-
-
-    /**
-     * Loads default values from database table schema.
+     * Загружает значения по умолчанию из схемы таблицы базы данных.
      *
-     * You may call this method to load default values after creating a new instance:
+     * Вы можете вызвать этот метод для загрузки значений по умолчанию после создания нового экземпляра:
      *
      * ```php
      * // class Customer extends \yii\db\ActiveRecord
@@ -117,7 +100,6 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать для b24
     public function loadDefaultValues($skipIfSet = true)
     {
-//        Yii::warning('loadDefaultValues', 'ar');
         $columns = static::getTableSchema()->columns;
         foreach ($this->attributes() as $name) {
             if (isset($columns[$name])) {
@@ -142,7 +124,6 @@ class ActiveRecord extends BaseActiveRecord
 //        Yii::warning('getDb', 'ar');
 //        return Yii::$app->getDb();
 //    }
-
 
 
     /**
@@ -290,118 +271,8 @@ class ActiveRecord extends BaseActiveRecord
     }
 
     /**
-     * Updates the whole table using the provided attribute values and conditions.
-     *
-     * For example, to change the status to be 1 for all customers whose status is 2:
-     *
-     * ```php
-     * Customer::updateAll(['status' => 1], 'status = 2');
-     * ```
-     *
-     * > Warning: If you do not specify any condition, this method will update **all** rows in the table.
-     *
-     * Note that this method will not trigger any events. If you need [[EVENT_BEFORE_UPDATE]] or
-     * [[EVENT_AFTER_UPDATE]] to be triggered, you need to [[find()|find]] the models first and then
-     * call [[update()]] on each of them. For example an equivalent of the example above would be:
-     *
-     * ```php
-     * $models = Customer::find()->where('status = 2')->all();
-     * foreach ($models as $model) {
-     *     $model->status = 1;
-     *     $model->update(false); // skipping validation as no user input is involved
-     * }
-     * ```
-     *
-     * For a large set of models you might consider using [[ActiveQuery::each()]] to keep memory usage within limits.
-     *
-     * @param array $attributes attribute values (name-value pairs) to be saved into the table
-     * @param string|array $condition the conditions that will be put in the WHERE part of the UPDATE SQL.
-     * Please refer to [[Query::where()]] on how to specify this parameter.
-     * @param array $params the parameters (name => value) to be bound to the query.
-     * @return int the number of rows updated
-     */
-//    public static function updateAll($attributes, $condition = '', $params = [])
-//    {
-//        $command = static::getDb()->createCommand();
-//        $command->update(static::tableName(), $attributes, $condition, $params);
-//
-//        return $command->execute();
-//    }
-
-    /**
-     * Updates the whole table using the provided counter changes and conditions.
-     *
-     * For example, to increment all customers' age by 1,
-     *
-     * ```php
-     * Customer::updateAllCounters(['age' => 1]);
-     * ```
-     *
-     * Note that this method will not trigger any events.
-     *
-     * @param array $counters the counters to be updated (attribute name => increment value).
-     * Use negative values if you want to decrement the counters.
-     * @param string|array $condition the conditions that will be put in the WHERE part of the UPDATE SQL.
-     * Please refer to [[Query::where()]] on how to specify this parameter.
-     * @param array $params the parameters (name => value) to be bound to the query.
-     * Do not name the parameters as `:bp0`, `:bp1`, etc., because they are used internally by this method.
-     * @return int the number of rows updated
-     */
-    // TODO updateAllCounters($counters, $condition = '', $params = [])
-    //  Переписать для b24
-    public static function updateAllCounters($counters, $condition = '', $params = [])
-    {
-        $n = 0;
-        foreach ($counters as $name => $value) {
-            $counters[$name] = new Expression("[[$name]]+:bp{$n}", [":bp{$n}" => $value]);
-            $n++;
-        }
-        $command = static::getDb()->createCommand();
-        $command->update(static::tableName(), $counters, $condition, $params);
-
-        return $command->execute();
-    }
-
-    /**
-     * Deletes rows in the table using the provided conditions.
-     *
-     * For example, to delete all customers whose status is 3:
-     *
-     * ```php
-     * Customer::deleteAll('status = 3');
-     * ```
-     *
-     * > Warning: If you do not specify any condition, this method will delete **all** rows in the table.
-     *
-     * Note that this method will not trigger any events. If you need [[EVENT_BEFORE_DELETE]] or
-     * [[EVENT_AFTER_DELETE]] to be triggered, you need to [[find()|find]] the models first and then
-     * call [[delete()]] on each of them. For example an equivalent of the example above would be:
-     *
-     * ```php
-     * $models = Customer::find()->where('status = 3')->all();
-     * foreach ($models as $model) {
-     *     $model->delete();
-     * }
-     * ```
-     *
-     * For a large set of models you might consider using [[ActiveQuery::each()]] to keep memory usage within limits.
-     *
-     * @param string|array $condition the conditions that will be put in the WHERE part of the DELETE SQL.
-     * Please refer to [[Query::where()]] on how to specify this parameter.
-     * @param array $params the parameters (name => value) to be bound to the query.
-     * @return int the number of rows deleted
-     */
-//    public static function deleteAll($condition = null, $params = [])
-//    {
-//        $command = static::getDb()->createCommand();
-//        $command->delete(static::tableName(), $condition, $params);
-//
-//        return $command->execute();
-//    }
-
-    /**
      * {@inheritdoc}
-     * @return ActiveQuery the newly created [[ActiveQuery]] instance.
+     * @return ActiveQuery только что созданный экземпляр [[ActiveQuery]].
      */
     public static function find()
     {
@@ -422,23 +293,13 @@ class ActiveRecord extends BaseActiveRecord
 //    }
 
     /**
-     * Returns the schema information of the DB table associated with this AR class.
-     * @return TableSchema the schema information of the DB table associated with this AR class.
-     * @throws InvalidConfigException if the table for the AR class does not exist.
+     * Возвращает информацию о схеме таблицы БД, связанной с этим классом AR.
+     * @return TableSchema информация о схеме таблицы БД, связанная с этим классом AR.
+     * @throws InvalidConfigException если таблица для класса AR не существует.
      */
-    // TODO getTableSchema()
-    //  Переписать для b24
-    public static function getTableSchema()
+    public function getTableSchema()
     {
-        $tableSchema = static::getDb()
-            ->getSchema()
-            ->getTableSchema(static::tableName());
-
-        if ($tableSchema === null) {
-            throw new InvalidConfigException('The table does not exist: ' . static::tableName());
-        }
-
-        return $tableSchema;
+        return null;
     }
 
     /**
@@ -458,8 +319,8 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать(Исправить)
     public static function primaryKey()
     {
-        //return static::getTableSchema()->primaryKey;
-        return 'id';
+        return static::getTableSchema()->primaryKey;
+        //return 'id';
     }
 
     /**
@@ -512,23 +373,16 @@ class ActiveRecord extends BaseActiveRecord
     public static function populateRecord($record, $row)
     {
 //        Yii::warning('populateRecord', 'ar');
-        Yii::warning($row, 'ar $row');
-        //$columns = static::getTableSchema()->columns;
-        $columns = ['id' => 'id', 'title' => 'title'];
+        //Yii::warning($row, 'ar $row');
+        $columns = $record->getTableSchema()->columns;
+        //$columns = ['id' => 'id', 'title' => 'title'];
 
         foreach ($row as $name => $value) {
-//            Yii::warning($row, '$row');
-//            Yii::warning($name, '$name');
-//            Yii::warning($value, '$value');
             if (isset($columns[$name])) {
-//                Yii::warning($name, '$name');
-//                Yii::warning($value, '$value');
-                //$row[$name] = $columns[$name]->phpTypecast($value);
-                $row[$name] = $value;
+                $row[$name] = $columns[$name]->phpTypecast($value);
+                //$row[$name] = $value;
             }
         }
-//        Yii::warning($record, 'ar $record');
-//        Yii::warning($record, 'ar $record');
         parent::populateRecord($record, $row);
     }
 
@@ -582,27 +436,27 @@ class ActiveRecord extends BaseActiveRecord
             return false;
         }
 
-        if (!$this->isTransactional(self::OP_INSERT)) {
-            return $this->insertInternal($attributes);
-        }
+//        if (!$this->isTransactional(self::OP_INSERT)) {
+        return $this->insertInternal($attributes);
+//        }
 
-        $transaction = static::getDb()->beginTransaction();
-        try {
-            $result = $this->insertInternal($attributes);
-            if ($result === false) {
-                $transaction->rollBack();
-            } else {
-                $transaction->commit();
-            }
-
-            return $result;
-        } catch (\Exception $e) {
-            $transaction->rollBack();
-            throw $e;
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-            throw $e;
-        }
+//        $transaction = static::getDb()->beginTransaction();
+//        try {
+//            $result = $this->insertInternal($attributes);
+//            if ($result === false) {
+//                $transaction->rollBack();
+//            } else {
+//                $transaction->commit();
+//            }
+//
+//            return $result;
+//        } catch (\Exception $e) {
+//            $transaction->rollBack();
+//            throw $e;
+//        } catch (\Throwable $e) {
+//            $transaction->rollBack();
+//            throw $e;
+//        }
     }
 
     /**
@@ -698,27 +552,27 @@ class ActiveRecord extends BaseActiveRecord
             return false;
         }
 
-        if (!$this->isTransactional(self::OP_UPDATE)) {
-            return $this->updateInternal($attributeNames);
-        }
+//        if (!$this->isTransactional(self::OP_UPDATE)) {
+        return $this->updateInternal($attributeNames);
+//        }
 
-        $transaction = static::getDb()->beginTransaction();
-        try {
-            $result = $this->updateInternal($attributeNames);
-            if ($result === false) {
-                $transaction->rollBack();
-            } else {
-                $transaction->commit();
-            }
-
-            return $result;
-        } catch (\Exception $e) {
-            $transaction->rollBack();
-            throw $e;
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-            throw $e;
-        }
+//        $transaction = static::getDb()->beginTransaction();
+//        try {
+//            $result = $this->updateInternal($attributeNames);
+//            if ($result === false) {
+//                $transaction->rollBack();
+//            } else {
+//                $transaction->commit();
+//            }
+//
+//            return $result;
+//        } catch (\Exception $e) {
+//            $transaction->rollBack();
+//            throw $e;
+//        } catch (\Throwable $e) {
+//            $transaction->rollBack();
+//            throw $e;
+//        }
     }
 
     /**
@@ -744,28 +598,27 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать для b24
     public function delete()
     {
-        Yii::warning('delete', 'ar');
-        if (!$this->isTransactional(self::OP_DELETE)) {
-            return $this->deleteInternal();
-        }
+//        if (!$this->isTransactional(self::OP_DELETE)) {
+        return $this->deleteInternal();
+//        }
 
-        $transaction = static::getDb()->beginTransaction();
-        try {
-            $result = $this->deleteInternal();
-            if ($result === false) {
-                $transaction->rollBack();
-            } else {
-                $transaction->commit();
-            }
-
-            return $result;
-        } catch (\Exception $e) {
-            $transaction->rollBack();
-            throw $e;
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-            throw $e;
-        }
+//        $transaction = static::getDb()->beginTransaction();
+//        try {
+//            $result = $this->deleteInternal();
+//            if ($result === false) {
+//                $transaction->rollBack();
+//            } else {
+//                $transaction->commit();
+//            }
+//
+//            return $result;
+//        } catch (\Exception $e) {
+//            $transaction->rollBack();
+//            throw $e;
+//        } catch (\Throwable $e) {
+//            $transaction->rollBack();
+//            throw $e;
+//        }
     }
 
     /**
@@ -831,6 +684,11 @@ class ActiveRecord extends BaseActiveRecord
 //        return isset($transactions[$scenario]) && ($transactions[$scenario] & $operation);
 //    }
 
+    public static function getAuth()
+    {
+        // TODO: Implement getAuth() method.
+    }
+
     //====================== К удалению ==============================================
 
     /**
@@ -859,5 +717,18 @@ class ActiveRecord extends BaseActiveRecord
         $query->sql = $sql;
 
         return $query->params($params);
+    }
+
+    public static function getConnect($auth = null)
+    {
+        $component = new b24Tools();
+        $b24App = null;// $component->connectFromUser($auth);
+        if ($auth === null) {
+            $b24App = $component->connectFromAdmin();
+        } else {
+            $b24App = $component->connectFromUser($auth);
+        }
+
+        return new B24Object($b24App);
     }
 }
