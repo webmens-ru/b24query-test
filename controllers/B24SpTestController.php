@@ -1,10 +1,12 @@
 <?php
 
 namespace app\controllers;
+
 use app\models\B24SpTest;
 use app\models\B24SpTestSearch;
 
-class B24SpTestController extends B24ActiveRestController {
+class B24SpTestController extends B24ActiveRestController
+{
     public $modelClass = B24SpTest::class;
     public $modelClassSearch = B24SpTestSearch::class;
 
@@ -27,7 +29,8 @@ class B24SpTestController extends B24ActiveRestController {
 //
 //
 //
-    public function actionTest(){
-        return $this->modelClass::find()->where(['id'=> 8])->all();
+    public function actionTest()
+    {
+        return $this->modelClass::find()->where(['id' => 8])->all();
     }
 }
