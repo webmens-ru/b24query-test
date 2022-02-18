@@ -12,44 +12,51 @@ class B24SpTest extends SpActiveRecord
     }
 
     //переделать
-    public function rules()
-    {
-        $parentRules = parent::rules();
-        $rules = [];
-        return array_merge($parentRules, $rules);
-    }
+//    public function rules()
+//    {
+//
+//        return [
+//            // атрибут required указывает, что name, email, subject, body обязательны для заполнения
+//            [[
+//                "id",
+//                "title",
+//                "opened",
+//            ], 'safe'],
+//        ];
+//    }
 
     /**
      * @return array
      */
-    public function attributeLabels()
-    {
-        $parentAttributeLabels = parent::attributeLabels();
-        $attributeLabels = [];
-        return array_merge($parentAttributeLabels, $attributeLabels);
-    }
+//    public function attributeLabels()
+//    {
+//        return [
+//            "id" => '',
+//            "title" => '',
+//            "opened" => '',
+//        ];
+//    }
 
-    public function fields()
-    {
-        //TODO function fields() ошибка  'test' => 'test'
-        return [
-            'id',
-            'title',
-            'opened',
-            'test' => 'test'
-        ];
-    }
+//    public function fields()
+//    {
+//        return [
+//            'id',
+//            'title',
+//            'opened',
+//            'test' => 'title'
+//        ];
+//    }
 
     /**
      * Переопределяет столбцы которые нужно выбирать из битрикс24 для оптинизации запроса
      * @return array
      */
-    public function attributes()
-    {
-        return [
-            'id',
-            'title',
-            'opened'
-        ];
-    }
+//    public function attributes()
+//    {
+//        return [
+//            'id',
+//            'title',
+//            'opened'
+//        ];
+//    }
 }

@@ -25,118 +25,9 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
         return 'crm.item.fields';
     }
 
-    public $id;
-    public $xmlId;
-    public $title;
-    public $createdBy;
-    public $updatedBy;
-    public $movedBy;
-    public $createdTime;
-    public $updatedTime;
-    public $movedTime;
-    public $categoryId;
-    public $opened;
-    public $stageId;
-    public $previousStageId;
-    public $begindate;
-    public $closedate;
-    public $companyId;
-    public $contactId;
-    public $opportunity;
-    public $isManualOpportunity;
-    public $taxValue;
-    public $currencyId;
-    public $mycompanyId;
-    public $sourceId;
-    public $sourceDescription;
-    public $webformId;
-    public $assignedById;
-    public $utmSource;
-    public $utmMedium;
-    public $utmCampaign;
-    public $utmContent;
-    public $utmTerm;
-    public $entityTypeId;
-
-    //переделать
-    public function rules()
+    public function fields()
     {
-
-        return [
-            // атрибут required указывает, что name, email, subject, body обязательны для заполнения
-            [[
-                "id",
-                "xmlId",
-                "title",
-                "createdBy",
-                "updatedBy",
-                "movedBy",
-                "createdTime",
-                "updatedTime",
-                "movedTime",
-                "categoryId",
-                "opened",
-                "stageId",
-                "previousStageId",
-                "begindate",
-                "closedate",
-                "companyId",
-                "contactId",
-                "opportunity",
-                "isManualOpportunity",
-                "taxValue",
-                "currencyId",
-                "mycompanyId",
-                "sourceId",
-                "sourceDescription",
-                "webformId",
-                "assignedById",
-                "utmSource",
-                "utmMedium",
-                "utmCampaign",
-                "utmContent",
-                "utmTerm",
-                "entityTypeId"
-            ], 'safe'],
-        ];
-    }
-
-    public function attributeLabels()
-    {
-        return [
-            "id" => '',
-            "xmlId" => '',
-            "title" => '',
-            "createdBy" => '',
-            "updatedBy" => '',
-            "movedBy" => '',
-            "createdTime" => '',
-            "updatedTime" => '',
-            "movedTime" => '',
-            "categoryId" => '',
-            "opened" => '',
-            "stageId" => '',
-            "previousStageId" => '',
-            "begindate" => '',
-            "closedate" => '',
-            "companyId" => '',
-            "contactId" => '',
-            "opportunity" => '',
-            "isManualOpportunity" => '',
-            "taxValue" => '',
-            "currencyId" => '',
-            "mycompanyId" => '',
-            "sourceId" => '',
-            "sourceDescription" => '',
-            "webformId" => '',
-            "assignedById" => '',
-            "utmSource" => '',
-            "utmMedium" => '',
-            "utmCampaign" => '',
-            "utmContent" => '',
-            "utmTerm" => '',
-            "entityTypeId" => '',
-        ];
+        return $this->attributes();
     }
 
     public static function getFooter($models)
@@ -160,27 +51,55 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
      */
     public function attributes()
     {
-        return array_keys($this->getTableSchema()->columns);
-    }
+        return array_keys(static::getTableSchema()->columns);
 
-    public function getTableSchema()
+    }
+//TODO function getTableSchema() Ни чего не понимаю
+
+//    public static function getTableSchema()
+//    {
+//        $tableSchema = static::getDb()
+//            ->getSchema()
+//            ->getTableSchema(static::tableName());
+//
+//        if ($tableSchema === null) {
+//            throw new InvalidConfigException('The table does not exist: ' . static::tableName());
+//        }
+//
+//        return $tableSchema;
+//    }
+
+    public static function getTableSchema()
     {
+//        $schema = new Schema();
+//        $tableSchema = $schema->getTableSchema(static::fieldsMethod(), ['entityTypeId' => static::entityTypeId()]);
+//
+//        if ($tableSchema === null) {
+//            throw new InvalidConfigException('The table does not exist: ' . static::tableName());
+//        }
+//
+//        return $tableSchema;
+
         $cache = Yii::$app->cache;
         $key = static::fieldsMethod()._.static::entityTypeId();
-        $cache->getOrSet($key, function () {
-            return $this->internalGetTableSchema();
+        return $cache->getOrSet($key, function () {
+            return static::internalGetTableSchema();
         }, 60);
     }
 
-    public function internalGetTableSchema(){
+    public static function internalGetTableSchema(){
         $b24Obj = self::getConnect();
         $fields = $b24Obj->client->call(
             static::fieldsMethod(), ['entityTypeId' => static::entityTypeId()]
         );
-        return ArrayHelper::getValue(Yii::createObject([
+        $fields = ArrayHelper::getValue($fields, 'result.fields');
+        return Yii::createObject([
             'class' => TableSchema::className(),
             'columns' => $fields,
-        ]), 'result.fields');
+        ]);
+//-----------------------------------------------------
+//        $schema = new Schema();
+//        $schema->
     }
 
 }

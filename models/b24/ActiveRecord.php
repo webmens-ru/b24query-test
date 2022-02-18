@@ -97,7 +97,7 @@ class ActiveRecord extends BaseActiveRecord
      * @return $this the model instance itself.
      */
     // TODO loadDefaultValues($skipIfSet = true)
-    //  Переписать для b24
+    //  Переписать для b24 предварительно +
     public function loadDefaultValues($skipIfSet = true)
     {
         $columns = static::getTableSchema()->columns;
@@ -215,7 +215,7 @@ class ActiveRecord extends BaseActiveRecord
     }
 
     /**
-     * Valid column names are table column names or column names prefixed with table name or table alias
+     * Допустимые имена столбцов — это имена столбцов таблицы или имена столбцов с префиксом имени таблицы или псевдонимом таблицы.
      *
      * @param Connection $db
      * @param array $aliases
@@ -225,7 +225,7 @@ class ActiveRecord extends BaseActiveRecord
      * @internal
      */
     // TODO filterValidColumnNames($db, array $aliases)
-    //  Переписать для b24
+    //  Переписать для b24 /пока не понял что это и для чего
     protected static function filterValidColumnNames($db, array $aliases)
     {
         Yii::warning('filterValidColumnNames', 'ar');
@@ -297,7 +297,7 @@ class ActiveRecord extends BaseActiveRecord
      * @return TableSchema информация о схеме таблицы БД, связанная с этим классом AR.
      * @throws InvalidConfigException если таблица для класса AR не существует.
      */
-    public function getTableSchema()
+    public static function getTableSchema()
     {
         return null;
     }
@@ -370,17 +370,14 @@ class ActiveRecord extends BaseActiveRecord
      */
     // TODO populateRecord($record, $row)
     //  Переписать(Исправить)
+    //  Приводит данные к формату php и передаёт родителю
     public static function populateRecord($record, $row)
     {
-//        Yii::warning('populateRecord', 'ar');
-        //Yii::warning($row, 'ar $row');
         $columns = $record->getTableSchema()->columns;
-        //$columns = ['id' => 'id', 'title' => 'title'];
-
+        Yii::warning($columns, '$columns');
         foreach ($row as $name => $value) {
             if (isset($columns[$name])) {
-                $row[$name] = $columns[$name]->phpTypecast($value);
-                //$row[$name] = $value;
+                $row[$name] = $value;//$columns[$name]->phpTypecast($value);
             }
         }
         parent::populateRecord($record, $row);

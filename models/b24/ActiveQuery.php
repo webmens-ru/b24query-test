@@ -45,6 +45,7 @@ class ActiveQuery extends Query {
     {
 //        Yii::warning($modelClass, '$modelClass');
         $this->modelClass = $modelClass;
+        $this->select = $this->modelClass::attributes();
         //$this->listMethod = $modelClass::listMethod();
         parent::__construct($config);
     }

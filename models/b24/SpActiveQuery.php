@@ -30,6 +30,7 @@ class SpActiveQuery extends ActiveQuery {
             'entityTypeId' => $this->entityTypeId,
             'filter' => $this->where,
             'order' => $this->orderBy,
+            'select' => $this->select,
             //Остальные параметры
         ];
         //Yii::warning($data, '$data');

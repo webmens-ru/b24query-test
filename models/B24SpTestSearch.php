@@ -14,7 +14,7 @@ use yii\data\ArrayDataProvider;
 class B24SpTestSearch extends B24SpTest {
 
     public function rules() {
-        return [[array_keys($this->attributeLabels()), 'string']];
+        return [[$this->attributes(), 'string']];
     }
 
     public function prepareSearchQuery($query, $requestParams){

@@ -270,7 +270,8 @@ class Query extends Component implements QueryInterface {
             //'entityTypeId' => $this->entityTypeId,
             'filter' => $this->where,
             'order' => $this->orderBy,
-            //Остальные параметры
+
+//            Остальные параметры
         ];
         Yii::warning($data, '$data');
         $this->params = $data;
