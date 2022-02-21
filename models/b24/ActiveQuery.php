@@ -132,16 +132,17 @@ class ActiveQuery extends Query {
 
     public function getFullData($obB24){
         $this->method = call_user_func([$this->modelClass, 'listMethod']);
-        $this->dataSelector = call_user_func([$this->modelClass, 'listDataSelector']);
-        $request = $this->getData($obB24);
+        $this->listDataSelector = $this->getListDataSelector();
+        $request =  $obB24->client->call($this->method, $this->params);
         $countCalls = (int)ceil($request['total'] / $obB24->client::MAX_BATCH_CALLS);
         $data = ArrayHelper::getValue($request, $this->listDataSelector);
-        //Yii::warning($data, '$data');
+        Yii::warning($data, '$data');
         for ($i = 1; $i < $countCalls; $i++)
             $obB24->client->addBatchCall($this->method,
                 array_merge($this->params, ['start' => $obB24->client::MAX_BATCH_CALLS * $i]),
                 function ($result) use (&$data) {
                     $data = array_merge($data, ArrayHelper::getValue($result, 'result.items'));
+                    Yii::warning($data, '$data1');
                 }
             );
         $obB24->client->processBatchCalls();

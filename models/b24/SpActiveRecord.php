@@ -54,52 +54,25 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
         return array_keys(static::getTableSchema()->columns);
 
     }
-//TODO function getTableSchema() Ни чего не понимаю
-
-//    public static function getTableSchema()
-//    {
-//        $tableSchema = static::getDb()
-//            ->getSchema()
-//            ->getTableSchema(static::tableName());
-//
-//        if ($tableSchema === null) {
-//            throw new InvalidConfigException('The table does not exist: ' . static::tableName());
-//        }
-//
-//        return $tableSchema;
-//    }
 
     public static function getTableSchema()
     {
-//        $schema = new Schema();
-//        $tableSchema = $schema->getTableSchema(static::fieldsMethod(), ['entityTypeId' => static::entityTypeId()]);
-//
-//        if ($tableSchema === null) {
-//            throw new InvalidConfigException('The table does not exist: ' . static::tableName());
-//        }
-//
-//        return $tableSchema;
-
         $cache = Yii::$app->cache;
         $key = static::fieldsMethod()._.static::entityTypeId();
-        return $cache->getOrSet($key, function () {
+        $tableSchema =  $cache->getOrSet($key, function () {
             return static::internalGetTableSchema();
-        }, 60);
+        }, 30);
+//        $tableSchema = new TableSchema($schemaData);
+        //Yii::warning(ArrayHelper::toArray($tableSchema), '$tableSchema');
+        return $tableSchema;
     }
 
     public static function internalGetTableSchema(){
         $b24Obj = self::getConnect();
-        $fields = $b24Obj->client->call(
+        $schemaData =   ArrayHelper::getValue($b24Obj->client->call(
             static::fieldsMethod(), ['entityTypeId' => static::entityTypeId()]
-        );
-        $fields = ArrayHelper::getValue($fields, 'result.fields');
-        return Yii::createObject([
-            'class' => TableSchema::className(),
-            'columns' => $fields,
-        ]);
-//-----------------------------------------------------
-//        $schema = new Schema();
-//        $schema->
+        ), 'result.fields');
+        return new TableSchema($schemaData);
     }
 
 }

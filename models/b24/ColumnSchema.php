@@ -8,6 +8,7 @@
 namespace app\models\b24;
 
 use yii\base\BaseObject;
+use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
 
 /**
@@ -18,6 +19,47 @@ use yii\helpers\StringHelper;
  */
 class ColumnSchema extends BaseObject
 {
+
+    //-
+    // +crm_category,
+    // +crm_currency,
+    // +crm_status,
+    // +employee,
+    // +user,
+    // crm_company,
+    // crm_contact,
+    // crm,
+    // address,
+    // url,
+    // file,
+    // iblock_section,
+    // iblock_element
+
+
+//    const TYPE_PK = 'pk';
+//    const TYPE_UPK = 'upk';
+//    const TYPE_BIGPK = 'bigpk';
+//    const TYPE_UBIGPK = 'ubigpk';
+//    const TYPE_CHAR = 'char';
+    const TYPE_STRING = 'string';
+//    const TYPE_TEXT = 'text';
+//    const TYPE_TINYINT = 'tinyint';
+//    const TYPE_SMALLINT = 'smallint';
+    const TYPE_INTEGER = 'integer';
+//    const TYPE_BIGINT = 'bigint';
+//    const TYPE_FLOAT = 'float';
+    const TYPE_DOUBLE = 'double';
+//    const TYPE_DECIMAL = 'decimal';
+    const TYPE_DATETIME = 'datetime';
+//    const TYPE_TIMESTAMP = 'timestamp';
+//    const TYPE_TIME = 'time';
+    const TYPE_DATE = 'date';
+//    const TYPE_BINARY = 'binary';
+    const TYPE_BOOLEAN = 'boolean';
+    const TYPE_MONEY = 'money';
+//    const TYPE_JSON = 'json';
+    const TYPE_ENUMERATION = 'enumeration';
+
     /**
      * @var string имя этого столбца (без кавычек).
      */
@@ -115,53 +157,81 @@ class ColumnSchema extends BaseObject
     protected function typecast($value)
     {
         //TODO переписать для Б24
-        \Yii::warning($value, 'typecast($value)');
-        if ($value === ''
-            && !in_array(
-                $this->type,
-                [
-                    Schema::TYPE_TEXT,
-                    Schema::TYPE_STRING,
-                    Schema::TYPE_BINARY,
-                    Schema::TYPE_CHAR
-                ],
-                true)
-        ) {
-            return null;
-        }
-
-        if ($value === null
-            || gettype($value) === $this->phpType
-            || $value instanceof ExpressionInterface
-            || $value instanceof Query
-        ) {
-            return $value;
-        }
-
-        if (is_array($value)
-            && count($value) === 2
-            && isset($value[1])
-            && in_array($value[1], $this->getPdoParamTypes(), true)
-        ) {
-            return new PdoValue($value[0], $value[1]);
-        }
+//        \Yii::warning($value, 'typecast($value)');
+//        if ($value === ''
+//            && !in_array(
+//                $this->type,
+//                [
+//                    Schema::TYPE_TEXT,
+//                    Schema::TYPE_STRING,
+//                    Schema::TYPE_BINARY,
+//                    Schema::TYPE_CHAR
+//                ],
+//                true)
+//        ) {
+//            return null;
+//        }
+//
+//        if ($value === null
+//            || gettype($value) === $this->phpType
+//            || $value instanceof ExpressionInterface
+//            || $value instanceof Query
+//        ) {
+//            return $value;
+//        }
+//
+//        if (is_array($value)
+//            && count($value) === 2
+//            && isset($value[1])
+//            && in_array($value[1], $this->getPdoParamTypes(), true)
+//        ) {
+//            return new PdoValue($value[0], $value[1]);
+//        }
+//
+//        switch ($this->phpType) {
+//            case 'resource':
+//            case 'string':
+//                if (is_resource($value)) {
+//                    return $value;
+//                }
+//                if (is_float($value)) {
+//                    // ensure type cast always has . as decimal separator in all locales
+//                    return StringHelper::floatToString($value);
+//                }
+//                if (is_numeric($value)
+//                    && ColumnSchemaBuilder::CATEGORY_NUMERIC === ColumnSchemaBuilder::$typeCategoryMap[$this->type]
+//                ) {
+//                    // https://github.com/yiisoft/yii2/issues/14663
+//                    return $value;
+//                }
+//
+//                return (string) $value;
+//            case 'integer':
+//                return (int) $value;
+//            case 'boolean':
+//                // treating a 0 bit value as false too
+//                // https://github.com/yiisoft/yii2/issues/9006
+//                return (bool) $value && $value !== "\0";
+//            case 'double':
+//                return (float) $value;
+//        }
 
         switch ($this->phpType) {
-            case 'resource':
+            //case 'resource':
             case 'string':
-                if (is_resource($value)) {
-                    return $value;
-                }
-                if (is_float($value)) {
-                    // ensure type cast always has . as decimal separator in all locales
-                    return StringHelper::floatToString($value);
-                }
-                if (is_numeric($value)
-                    && ColumnSchemaBuilder::CATEGORY_NUMERIC === ColumnSchemaBuilder::$typeCategoryMap[$this->type]
-                ) {
-                    // https://github.com/yiisoft/yii2/issues/14663
-                    return $value;
-                }
+//                if (is_resource($value)) {
+//                    return $value;
+//                }
+//                if (is_float($value)) {
+//                    // ensure type cast always has . as decimal separator in all locales
+//                    return StringHelper::floatToString($value);
+//                }
+//                if (is_numeric($value)
+//                    && ColumnSchemaBuilder::CATEGORY_NUMERIC === ColumnSchemaBuilder::$typeCategoryMap[$this->type]
+//                ) {
+//                    // https://github.com/yiisoft/yii2/issues/14663
+//                    return $value;
+//                }
 
                 return (string) $value;
             case 'integer':
@@ -169,9 +239,17 @@ class ColumnSchema extends BaseObject
             case 'boolean':
                 // treating a 0 bit value as false too
                 // https://github.com/yiisoft/yii2/issues/9006
-                return (bool) $value && $value !== "\0";
+                return (bool) $value;// && $value !== "\0";
             case 'double':
                 return (float) $value;
+            case 'array':
+                if ($this->type == self::TYPE_ENUMERATION){
+                    $value = [
+                        'value' => $value,
+                        'title' => ArrayHelper::getValue($this->enumValues, $value)
+                    ];
+                }
+                return $value;
         }
 
         return $value;
@@ -180,8 +258,76 @@ class ColumnSchema extends BaseObject
     /**
      * @return int[] array of numbers that represent possible PDO parameter types
      */
-    private function getPdoParamTypes()
+//    private function getPdoParamTypes()
+//    {
+//        return [\PDO::PARAM_BOOL, \PDO::PARAM_INT, \PDO::PARAM_STR, \PDO::PARAM_LOB, \PDO::PARAM_NULL, \PDO::PARAM_STMT];
+//    }
+
+    public function prepare($key, $columnData){
+        $this->name = $key;
+        $this->allowNull = !ArrayHelper::getValue($columnData, 'isRequired');
+        $this->type = ArrayHelper::getValue($columnData, 'type');
+        $this->phpType = $this->getPhpType();
+//                    'dbType',
+        $this->defaultValue= ArrayHelper::getValue($columnData, 'settings.DEFAULT_VALUE');
+//                    'enumValues',
+//                    'size',
+//                    'precision',
+//                    'scale',
+//                    'isPrimaryKey',
+//                    'autoIncrement',
+//                    'unsigned',
+        $this->comment = ArrayHelper::getValue($columnData, 'title');
+        $this->enumValues = ArrayHelper::map(ArrayHelper::getValue($columnData, 'items'),'ID', 'VALUE');
+//        ----------------------------------------------------------------------
+        /*
+         * isDynamic
+         * isImmutable
+         * isMultiple
+         * isReadOnly
+         * upperName
+         * ---settings
+         * parentEntityTypeId
+         * isMyCompany
+         * DEFAULT_VALUE
+         * MAX_LENGTH
+         * MIN_LENGTH
+         * REGEXP
+         * ROWS
+         * SIZE
+         *********DYNAMIC_189
+         * ENTITY_TYPE
+         * *ENTITY_TYPE_ID
+         * *ID
+         * *NAME
+         * *SEMANTIC_INFO
+         * **FINAL_SORT
+         * **FINAL_SUCCESS_FIELD
+         * **FINAL_UNSUCCESS_FIELD
+         * **START_FIELD
+         * -----statusType
+         * ENTITY_TYPE_ID
+         * ID
+         * NAME
+         */
+
+    }
+
+    protected function getPhpType()
     {
-        return [\PDO::PARAM_BOOL, \PDO::PARAM_INT, \PDO::PARAM_STR, \PDO::PARAM_LOB, \PDO::PARAM_NULL, \PDO::PARAM_STMT];
+        static $typeMap = [
+            self::TYPE_STRING => 'string',
+            self::TYPE_INTEGER => 'integer',
+            self::TYPE_DOUBLE => 'double',
+            self::TYPE_DATETIME => 'datetime',
+            self::TYPE_DATE => 'date',
+            self::TYPE_BOOLEAN => 'boolean',
+            self::TYPE_MONEY => 'money',
+            self::TYPE_ENUMERATION => 'array',
+        ];
+        if (isset($typeMap[$this->type])) {
+            return $typeMap[$this->type];
+        }
+        return 'string';
     }
 }

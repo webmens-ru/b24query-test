@@ -79,6 +79,8 @@ class B24ActiveRestController extends \yii\rest\ActiveController {
                 $auth = $userModel->b24AccessParams;
                 return ArrayHelper::toArray(json_decode($auth));
             },
+            // TODO DУдалить следующую строку
+            'pagination' =>false,
         ];
         return $actions;
     }
