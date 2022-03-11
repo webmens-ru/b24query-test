@@ -2,18 +2,16 @@
 
 namespace app\models;
 
-use app\models\b24\SpActiveRecord;
+use app\models\b24\CrmCategoryActiveRecord;
+use app\models\b24\CrmStatusActiveRecord;
 
-class B24SpTest extends SpActiveRecord
+class B24Status extends CrmStatusActiveRecord
 {
-    public static function entityTypeId()
-    {
-        return 174;
-    }
 
-    public function getCategory(){
-        return  $this->hasOne(B24Category::class, ['id' => 'categoryId']);
-    }
+//    public static function entityTypeId()
+//    {
+//        return 174;
+//    }
 
     //переделать
 //    public function rules()
@@ -44,12 +42,10 @@ class B24SpTest extends SpActiveRecord
 //    public function fields()
 //    {
 //        return [
-//            'id',
-//            'title',
-////            'opened',
-////            'test' => 'title'
-//            'categoryId',
-//            'category'
+//            'id' => 'ID',
+//            'title' => 'NAME',
+//            //'opened',
+//            //'test' => 'title'
 //        ];
 //    }
 

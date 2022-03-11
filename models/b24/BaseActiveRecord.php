@@ -436,9 +436,9 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
 
     /**
      * Создает экземпляр запроса для отношения `has-one` или `has-many`.
-     * @param string $class the class name of the related record.
-     * @param array $link the primary-foreign key constraint.
-     * @param bool $multiple whether this query represents a relation to more than one record.
+     * @param string $class имя класса связанной записи.
+     * @param array $link ограничение первичного внешнего ключа.
+     * @param bool $multiple представляет ли этот запрос отношение к более чем одной записи.
      * @return ActiveQueryInterface the relational query object.
      * @since 2.0.12
      * @see hasOne()
@@ -1280,15 +1280,16 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
 
             return null;
         }
-        if (!$relation instanceof ActiveQueryInterface) {
-            if ($throwException) {
-                throw new InvalidArgumentException(get_class($this) . ' has no relation named "' . $name . '".');
-            }
-
-            return null;
-        }
-
+//        if (!$relation instanceof ActiveQueryInterface) {
+//            if ($throwException) {
+//                throw new InvalidArgumentException(get_class($this) . ' has no relation named "' . $name . '".');
+//            }
+//
+//            return null;
+//        }
+Yii::warning($getter, '$getter');
         if (method_exists($this, $getter)) {
+            Yii::warning($getter, '$getter1');
             // relation name is case sensitive, trying to validate it when the relation is defined within this class
             $method = new \ReflectionMethod($this, $getter);
             $realName = lcfirst(substr($method->getName(), 3));

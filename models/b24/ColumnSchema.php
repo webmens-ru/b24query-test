@@ -21,7 +21,7 @@ class ColumnSchema extends BaseObject
 {
 
     //-
-    // +crm_category,
+    // ++crm_category,
     // +crm_currency,
     // +crm_status,
     // +employee,

@@ -269,7 +269,7 @@ class Query extends Component implements QueryInterface {
         $data = [
             //'entityTypeId' => $this->entityTypeId,
             'filter' => $this->where,
-            'order' => $this->orderBy,
+            'order' => $this->orderBy
 
 //            Остальные параметры
         ];

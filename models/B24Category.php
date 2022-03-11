@@ -2,17 +2,14 @@
 
 namespace app\models;
 
-use app\models\b24\SpActiveRecord;
+use app\models\b24\CrmCategoryActiveRecord;
 
-class B24SpTest extends SpActiveRecord
+class B24Category extends CrmCategoryActiveRecord
 {
+
     public static function entityTypeId()
     {
         return 174;
-    }
-
-    public function getCategory(){
-        return  $this->hasOne(B24Category::class, ['id' => 'categoryId']);
     }
 
     //переделать
@@ -41,17 +38,15 @@ class B24SpTest extends SpActiveRecord
 //        ];
 //    }
 
-//    public function fields()
-//    {
-//        return [
-//            'id',
-//            'title',
-////            'opened',
-////            'test' => 'title'
-//            'categoryId',
-//            'category'
-//        ];
-//    }
+    public function fields()
+    {
+        return [
+            'id',
+            'title' => 'name',
+            //'opened',
+            //'test' => 'title'
+        ];
+    }
 
     /**
      * Переопределяет столбцы которые нужно выбирать из битрикс24 для оптинизации запроса
