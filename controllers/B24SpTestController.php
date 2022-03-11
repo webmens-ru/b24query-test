@@ -31,6 +31,6 @@ class B24SpTestController extends B24ActiveRestController
 //
     public function actionTest()
     {
-        return $this->modelClass::find()->where(['id' => 8])->all();
+        return $this->modelClass::find()->where(['id' => 8])->with(['category'])->all();
     }
 }
