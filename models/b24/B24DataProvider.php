@@ -97,7 +97,7 @@ class B24DataProvider extends BaseDataProvider
     public function setSort($value)
     {
         parent::setSort($value);
-        //#исправить
+        //TODO исправить
         if (/*$this->query instanceof ActiveQueryInterface && */($sort = $this->getSort()) !== false) {
             Yii::warning(ArrayHelper::toArray($sort), 102);
             /* @var $modelClass Model */

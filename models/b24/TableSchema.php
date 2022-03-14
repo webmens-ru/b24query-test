@@ -4,6 +4,8 @@ namespace app\models\b24;
 
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
+use yii\helpers\ArrayHelper;
+use Yii;
 
 /**
  * TableSchema представляет метаданные таблицы базы данных.
@@ -55,6 +57,13 @@ class TableSchema extends BaseObject
      */
     public $columns = [];
 
+    public function __construct($schemaData, $config = [])
+    {
+        $this->columns = $this->prepareColumns($schemaData);
+
+        parent::__construct($config);
+    }
+
 
     /**
      * Получает метаданные именованного столбца.
@@ -83,7 +92,7 @@ class TableSchema extends BaseObject
      */
     public function fixPrimaryKey($keys)
     {
-        $keys = (array) $keys;
+        $keys = (array)$keys;
         $this->primaryKey = $keys;
         foreach ($this->columns as $column) {
             $column->isPrimaryKey = false;
@@ -95,5 +104,21 @@ class TableSchema extends BaseObject
                 throw new InvalidArgumentException("Primary key '$key' cannot be found in table '{$this->name}'.");
             }
         }
+    }
+
+    protected function prepareColumns($columnsData)
+    {
+        $columns = [];
+        foreach ($columnsData as $key => $columnData) {
+
+            Yii::warning($columnData, '$columnData');
+            $column = new ColumnSchema();
+            $column->prepare($key, $columnData);
+//            $column = ColumnSchema::prepare($key, $columnData);
+            Yii::warning(ArrayHelper::toArray($column), '$column');
+            $columns[$key] = $column;
+        }
+
+        return $columns;
     }
 }

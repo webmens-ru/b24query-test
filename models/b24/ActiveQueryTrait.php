@@ -148,11 +148,13 @@ trait ActiveQueryTrait
         \Yii::warning('findWith', 'aqt');
         $primaryModel = reset($models);
         if (!$primaryModel instanceof ActiveRecordInterface) {
+            \Yii::warning('151', 'aqt');
             /* @var $modelClass ActiveRecordInterface */
             $modelClass = $this->modelClass;
             $primaryModel = $modelClass::instance();
         }
         $relations = $this->normalizeRelations($primaryModel, $with);
+        \Yii::warning(ArrayHelper::toArray($relations), 'aqt157');
         /* @var $relation ActiveQuery */
         foreach ($relations as $name => $relation) {
             if ($relation->asArray === null) {

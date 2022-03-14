@@ -76,6 +76,11 @@ class Query extends Component implements QueryInterface {
 
     public $modelClass;
 
+    public static function oneDataSelector()
+    {
+        return 'result';
+    }
+
     public function all($auth = null){
 //        Yii::warning('function all($auth = null)');
 //        Yii::warning($this->where, '$this->where1');
@@ -86,7 +91,7 @@ class Query extends Component implements QueryInterface {
         $this->prepairParams();
 //        Yii::warning($this->where, '$this->where2');
 //        Yii::warning($this->params, '$this->params2');
-        //#вынести часть логики
+        //TODO вынести часть логики
         $component = new b24Tools();
         $b24App = null;// $component->connectFromUser($auth);
         if($auth === null){
@@ -98,15 +103,16 @@ class Query extends Component implements QueryInterface {
         }
         $obB24 = new B24Object($b24App);
         $rows = [];
-        //#Исправить
+        //TODO Исправить
         if(!$this->limit){
             Yii::warning($this->limit, '$this->limit');
-            //#передавать в функцию limit и ofset
+            //TODO передавать в функцию limit и ofset
             $rows = $this->getFullData($obB24);
         }else{
             Yii::warning($this->limit, '$this->limit');
             $rows = $this->getData($obB24);
         }
+        //TODO Нужно ли здесь делать populate
         return $this->populate($rows);
     }
 
@@ -269,9 +275,17 @@ class Query extends Component implements QueryInterface {
         $data = [
             //'entityTypeId' => $this->entityTypeId,
             'filter' => $this->where,
-            'order' => $this->orderBy,
+            'order' => $this->orderBy
 
 //            Остальные параметры
+        ];
+        Yii::warning($data, '$data');
+        $this->params = $data;
+    }
+
+    protected function prepairOneParams(){
+        //$this->getEntityTypeIdUsedInFrom();/
+        $data = [
         ];
         Yii::warning($data, '$data');
         $this->params = $data;
@@ -352,7 +366,7 @@ class Query extends Component implements QueryInterface {
 
     public function addParams($params)
     {
-        //#Проверить
+        //TODO Проверить
         if (!empty($params)) {
             if (empty($this->params)) {
                 $this->params = $params;
@@ -372,7 +386,7 @@ class Query extends Component implements QueryInterface {
 
 //    public function andWhere($condition, $params = [])
 //    {
-//        //#Переписать
+//        //TODO Переписать
 //        if ($this->where === null) {
 //            $this->where = $condition;
 //        } elseif (is_array($this->where) && isset($this->where[0]) && strcasecmp($this->where[0], 'and') === 0) {
@@ -507,7 +521,7 @@ class Query extends Component implements QueryInterface {
 
     public function exists($db = null)
     {
-        //#Переписать
+        //TODO Переписать
         if ($this->emulateExecution) {
             return false;
         }
@@ -548,7 +562,7 @@ class Query extends Component implements QueryInterface {
 
     public function count($q = '*', $db = null)
     {
-        //#Переписать
+        //TODO Переписать
         if ($this->emulateExecution) {
             return 0;
         }
@@ -605,14 +619,56 @@ class Query extends Component implements QueryInterface {
 //        return $this->createCommand($db)->queryScalar();
 //    }
 
-    public function one($db = null)
+    public function one($auth = null)
     {
-        //#Переписать
+        //TODO Переписать
         if ($this->emulateExecution) {
             return false;
         }
 
-        return $this->createCommand($db)->queryOne();
+        $this->prepairOneParams();
+
+        $component = new b24Tools();
+        $b24App = null;// $component->connectFromUser($auth);
+        if($auth === null){
+            Yii::warning('connectFromAdmin');
+            $b24App = $component->connectFromAdmin();
+        }else{
+            Yii::warning('connectFromUser');
+            $b24App = $component->connectFromUser($auth);
+        }
+        $obB24 = new B24Object($b24App);
+
+
+//        $this->method = call_user_func([$this->modelClass, 'listMethod']);
+//        $this->listDataSelector = $this->getListDataSelector();
+//        $request = $obB24->client->call($this->method, $this->params);
+//        $countCalls = (int)ceil($request['total'] / $obB24->client::MAX_BATCH_CALLS);
+//        $data = ArrayHelper::getValue($request, $this->listDataSelector);
+//        Yii::warning($data, '$data');
+//        if (count($data) != $request['total']) {
+//            for ($i = 1; $i < $countCalls; $i++)
+//                $obB24->client->addBatchCall($this->method,
+//                    array_merge($this->params, ['start' => $obB24->client::MAX_BATCH_CALLS * $i]),
+//                    function ($result) use (&$data) {
+//                        $data = array_merge($data, ArrayHelper::getValue($result, $this->listDataSelector));
+//                        Yii::warning($data, '$data1');
+//                    }
+//                );
+//            $obB24->client->processBatchCalls();
+//        }
+//        return $data; //Добавить вывод дополнительной информации
+
+        $this->dataSelector = $this->oneDataSelector();
+        $this->method = call_user_func([$this->modelClass, 'oneMethod']);
+        $data = $obB24->client->call($this->method, $this->params);
+        $row = ArrayHelper::getValue($data, $this->dataSelector);
+        Yii::warning($row, '$result');
+        return $row;
+        //TODO Нужно ли здесь делать populate
+        //return $this->populate([$rows]);
+
+//        return $this->createCommand($db)->queryOne();
     }
 
 //    public function prepare($builder)

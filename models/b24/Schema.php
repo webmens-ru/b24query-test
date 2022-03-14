@@ -854,10 +854,15 @@ class Schema extends BaseObject
      * @param bool $refresh перезагружать ли схему таблицы, даже если она найдена в кеше.
      * @return TableSchema|null метаданные таблицы. `null`, если именованная таблица не существует.
      */
-    public function getTableSchema($method, $params = [], $refresh = false)
+    public function getTableSchema($name, $method, $params = [], $refresh = false)
     {
-        return $this->getTableMetadata($method, $params, $refresh);
+        return $this->getTableMetadata($name, $method, $params, 'schema', $refresh);
     }
+
+//    public function getTableSchema($name, $refresh = false)
+//    {
+//        return $this->getTableMetadata($name, 'schema', $refresh);
+//    }
 
     /**
      * Returns the metadata for all tables in the database.
@@ -883,24 +888,25 @@ class Schema extends BaseObject
      * @return mixed metadata.
      * @since 2.0.13
      */
-    protected function getTableMetadata($method, $params = [], $refresh = false)
-    {
-        $component = new b24Tools();
-        $b24App = $component->connectFromAdmin();
-        $obB24 = new B24Object($b24App);
-        $fields = $obB24->client->call($method, $params);
-        $fields = ArrayHelper::getValue($fields, 'result.fields');
-        foreach ($fields as $field){
-            $column = Yii::createObject([
-                'class' => ColumnSchema::className(),
-                'columns' => ArrayHelper::getValue($fields, 'result.fields'),
-            ]);
-        }
-    }
-
-//    protected function getTableMetadata($name, $type, $refresh)
+//    protected function getTableMetadata($method, $params = [], $refresh = false)
 //    {
+//        $component = new b24Tools();
+//        $b24App = $component->connectFromAdmin();
+//        $obB24 = new B24Object($b24App);
+//        $fields = $obB24->client->call($method, $params);
+//        $fields = ArrayHelper::getValue($fields, 'result.fields');
+//        foreach ($fields as $field){
+//            $column = Yii::createObject([
+//                'class' => ColumnSchema::className(),
+//                'columns' => ArrayHelper::getValue($fields, 'result.fields'),
+//            ]);
+//        }
+//    }
+
+    protected function getTableMetadata($name, $method,  $params, $type, $refresh)
+    {
 //        $cache = null;
+
 //        if ($this->db->enableSchemaCache && !in_array($name, $this->db->schemaCacheExclude, true)) {
 //            $schemaCache = is_string($this->db->schemaCache) ? Yii::$app->get($this->db->schemaCache, false) : $this->db->schemaCache;
 //            if ($schemaCache instanceof CacheInterface) {
@@ -908,16 +914,42 @@ class Schema extends BaseObject
 //            }
 //        }
 //        $rawName = $this->getRawTableName($name);
-//        if (!isset($this->_tableMetadata[$rawName])) {
-//            $this->loadTableMetadataFromCache($cache, $rawName);
+        $cache = Yii::$app->cache;
+
+
+
+        if (!isset($this->_tableMetadata[$name])) {
+            $this->_tableMetadata[$name] = $cache->getOrSet($name, function () {
+                return static::internalGetTableSchema();
+            }, 60);
+//            $this->loadTableMetadataFromCache($cache, $name);
+        }
+
+
+//        if ($refresh || !array_key_exists($type, $this->_tableMetadata[$name])) {
+//            $this->_tableMetadata[$name][$type] = $this->{'loadTable' . ucfirst($type)}($name);
+//            $this->saveTableMetadataToCache($cache, $name);
 //        }
-//        if ($refresh || !array_key_exists($type, $this->_tableMetadata[$rawName])) {
-//            $this->_tableMetadata[$rawName][$type] = $this->{'loadTable' . ucfirst($type)}($rawName);
-//            $this->saveTableMetadataToCache($cache, $rawName);
-//        }
-//
-//        return $this->_tableMetadata[$rawName][$type];
-//    }
+
+        return $this->_tableMetadata[$name][$type];
+    }
+
+    public static function internalGetTableSchema(){
+        $component = new b24Tools();
+        $b24App = $component->connectFromAdmin();
+        $b24Obj = B24Object($b24App);
+        $fields = $b24Obj->client->call(
+            static::fieldsMethod(), ['entityTypeId' => static::entityTypeId()]
+        );
+        $fields = ArrayHelper::getValue($fields, 'result.fields');
+//        return Yii::createObject([
+//            'class' => \app\models\b24\TableSchema::className(),
+//            'columns' => $fields,
+//        ]);
+//-----------------------------------------------------
+//        $schema = new Schema();
+//        $schema->
+    }
 
     /**
      * Returns the metadata of the given type for all tables in the given schema.
@@ -993,13 +1025,13 @@ class Schema extends BaseObject
             return;
         }
 
-        $metadata = $cache->get($this->getCacheKey($name));
+        $metadata = $cache->get($name);
         if (!is_array($metadata) || !isset($metadata['cacheVersion']) || $metadata['cacheVersion'] !== static::SCHEMA_CACHE_VERSION) {
             $this->_tableMetadata[$name] = [];
             return;
         }
 
-        unset($metadata['cacheVersion']);
+//        unset($metadata['cacheVersion']);
         $this->_tableMetadata[$name] = $metadata;
     }
 

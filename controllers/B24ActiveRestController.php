@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use wm\admin\models\User;
 use Yii;
+use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\helpers\ArrayHelper;
 
@@ -47,7 +48,11 @@ class B24ActiveRestController extends \yii\rest\ActiveController {
                 ],
             ],
             'authenticator' => [
-                'class' => HttpBearerAuth::class,
+//                'class' => HttpBearerAuth::class,
+                'class' => CompositeAuth::className(),
+                'authMethods' => [
+                    \app\filters\auth\HttpBearerAuth::className(),
+                ],
             ],
         ];
     }
@@ -79,6 +84,8 @@ class B24ActiveRestController extends \yii\rest\ActiveController {
                 $auth = $userModel->b24AccessParams;
                 return ArrayHelper::toArray(json_decode($auth));
             },
+            // TODO DУдалить следующую строку
+            'pagination' =>false,
         ];
         return $actions;
     }

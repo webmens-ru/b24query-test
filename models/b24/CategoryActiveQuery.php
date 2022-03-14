@@ -5,7 +5,7 @@ namespace app\models\b24;
 //Код не универсален а направлен на смарт процессы стоит перенести в другой класс
 use yii\helpers\ArrayHelper;
 
-class SpActiveQuery extends ActiveQuery {
+class CategoryActiveQuery extends ActiveQuery {
     public $entityTypeId;
 
     public function getEntityTypeIdUsedInFrom()
@@ -19,7 +19,7 @@ class SpActiveQuery extends ActiveQuery {
 
     public static function oneDataSelector()
     {
-        return 'result.item';
+        return 'result.category';
     }
 
 //    protected function getPrimaryTableName()
@@ -51,8 +51,8 @@ class SpActiveQuery extends ActiveQuery {
         if(ArrayHelper::getValue($this->where, 'id')){
             $id = ArrayHelper::getValue($this->where, 'id');
         }
-        if($this->link){
-
+        if(ArrayHelper::getValue($this->link, 'id')){
+            $id = ArrayHelper::getValue($this->where, 'inArray.0');
         }
         $data = [
             'entityTypeId' => $this->entityTypeId,

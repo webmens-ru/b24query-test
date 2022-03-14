@@ -2,17 +2,14 @@
 
 namespace app\models;
 
-use app\models\b24\SpActiveRecord;
+use app\models\b24\CrmCategoryActiveRecord;
 
-class B24SpTest extends SpActiveRecord
+class B24Category extends CrmCategoryActiveRecord
 {
+
     public static function entityTypeId()
     {
         return 174;
-    }
-
-    public function getCategory(){
-        return  $this->hasOne(B24Category::class, ['id' => 'categoryId']);
     }
 
     //переделать
@@ -45,11 +42,9 @@ class B24SpTest extends SpActiveRecord
     {
         return [
             'id',
-            'title',
-//            'opened',
-//            'test' => 'title'
-            'categoryId',
-            'category'
+            'title' => 'name',
+            //'opened',
+            //'test' => 'title'
         ];
     }
 

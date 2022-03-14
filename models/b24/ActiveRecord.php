@@ -377,7 +377,8 @@ class ActiveRecord extends BaseActiveRecord
         Yii::warning($columns, '$columns');
         foreach ($row as $name => $value) {
             if (isset($columns[$name])) {
-                $row[$name] = $value;//$columns[$name]->phpTypecast($value);
+                Yii::warning($name);
+                $row[$name] = $columns[$name]->phpTypecast($value);
             }
         }
         parent::populateRecord($record, $row);

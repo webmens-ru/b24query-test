@@ -9,26 +9,20 @@ use Yii;
 use yii\helpers\ArrayHelper;
 
 
-class SpActiveRecord extends \app\models\b24\ActiveRecord
+class CrmStatusActiveRecord extends \app\models\b24\ActiveRecord
 {
-    public static function entityTypeId()
-    {
-        return null;
-    }
+//    public static function entityTypeId()
+//    {
+//        return null;
+//    }
 
     public static function listMethod()
     {
-        return 'crm.item.list';
+        return 'crm.status.list';
     }
-
-    public static function oneMethod()
-    {
-        return 'crm.item.get';
-    }
-
     public static function fieldsMethod()
     {
-        return 'crm.item.fields';
+        return 'crm.status.fields';
     }
 
     public function fields()
@@ -43,12 +37,12 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
 
     public static function find()
     {
-        return Yii::createObject(SpActiveQuery::className(), [get_called_class()]);
+        return Yii::createObject(CrmActiveQuery::className(), [get_called_class()]);
     }
 
     public static function listDataSelector()
     {
-        return 'result.items';
+        return 'result';
     }
 
     public static function oneDataSelector()
@@ -69,7 +63,7 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
     public static function getTableSchema()
     {
         $cache = Yii::$app->cache;
-        $key = static::fieldsMethod()._.static::entityTypeId();
+        $key = static::fieldsMethod();
         $tableSchema =  $cache->getOrSet($key, function () {
             return static::internalGetTableSchema();
         }, 30);
@@ -81,8 +75,8 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
     public static function internalGetTableSchema(){
         $b24Obj = self::getConnect();
         $schemaData =   ArrayHelper::getValue($b24Obj->client->call(
-            static::fieldsMethod(), ['entityTypeId' => static::entityTypeId()]
-        ), 'result.fields');
+            static::fieldsMethod(), []
+        ), 'result');
         return new TableSchema($schemaData);
     }
 
