@@ -439,7 +439,7 @@ trait QueryTrait
      */
     public function offset($offset)
     {
-        //#Переписать-проверить
+        //TODO Переписать-проверить
         $this->offset = $offset;
         return $this;
     }

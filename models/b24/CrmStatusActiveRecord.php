@@ -45,6 +45,11 @@ class CrmStatusActiveRecord extends \app\models\b24\ActiveRecord
         return 'result';
     }
 
+    public static function oneDataSelector()
+    {
+        return 'result';
+    }
+
     /**
      * Возвращает все столбцы сущности, может быть переопределена для оптимизации запроса
      * @return array

@@ -20,6 +20,12 @@ class CrmCategoryActiveRecord extends \app\models\b24\ActiveRecord
     {
         return 'crm.category.list';
     }
+
+    public static function oneMethod()
+    {
+        return 'crm.category.get';
+    }
+
     public static function fieldsMethod()
     {
         return 'crm.category.fields';
@@ -37,12 +43,17 @@ class CrmCategoryActiveRecord extends \app\models\b24\ActiveRecord
 
     public static function find()
     {
-        return Yii::createObject(SpActiveQuery::className(), [get_called_class()]);
+        return Yii::createObject(CategoryActiveQuery::className(), [get_called_class()]);
     }
 
     public static function listDataSelector()
     {
         return 'result.categories';
+    }
+
+    public static function oneDataSelector()
+    {
+        return 'result.category';
     }
 
     /**

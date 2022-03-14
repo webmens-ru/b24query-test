@@ -20,6 +20,12 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
     {
         return 'crm.item.list';
     }
+
+    public static function oneMethod()
+    {
+        return 'crm.item.get';
+    }
+
     public static function fieldsMethod()
     {
         return 'crm.item.fields';
@@ -43,6 +49,11 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
     public static function listDataSelector()
     {
         return 'result.items';
+    }
+
+    public static function oneDataSelector()
+    {
+        return 'result';
     }
 
     /**

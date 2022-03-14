@@ -1212,6 +1212,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
 
     public static function populateRecord($record, $row)
     {
+        Yii::warning($record->attributes());
         $columns = array_flip($record->attributes());
         foreach ($row as $name => $value) {
             if (isset($columns[$name])) {

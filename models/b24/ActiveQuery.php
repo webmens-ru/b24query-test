@@ -95,6 +95,8 @@ class ActiveQuery extends Query
 
     public $listDataSelector = 'result';
 
+    public $dataSelector = 'result';
+
     //private $_entityTypeId = 0;
 
     //private $_entityTypeId; //= 174;
@@ -255,7 +257,6 @@ class ActiveQuery extends Query
      */
     private function normalizeRelations($model, $with)
     {
-        \Yii::warning('normalizeRelations', 'aqt');
         $relations = [];
         foreach ($with as $name => $callback) {
             if (is_int($name)) {
@@ -487,6 +488,7 @@ class ActiveQuery extends Query
         $row = parent::one($auth);
         if ($row !== false) {
             $models = $this->populate([$row]);
+            //Yii::warning($models);
             return reset($models) ?: null;
         }
 

@@ -41,17 +41,17 @@ class B24SpTest extends SpActiveRecord
 //        ];
 //    }
 
-//    public function fields()
-//    {
-//        return [
-//            'id',
-//            'title',
-////            'opened',
-////            'test' => 'title'
-//            'categoryId',
-//            'category'
-//        ];
-//    }
+    public function fields()
+    {
+        return [
+            'id',
+            'title',
+//            'opened',
+//            'test' => 'title'
+            'categoryId',
+            'category'
+        ];
+    }
 
     /**
      * Переопределяет столбцы которые нужно выбирать из битрикс24 для оптинизации запроса
