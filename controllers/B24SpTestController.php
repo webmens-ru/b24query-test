@@ -48,7 +48,7 @@ class B24SpTestController extends B24ActiveRestController
     public function actionTest()
     {
         return $this->modelClass::find()
-            ->where(['id' => [8, 10]])
+            ->where(['id' => [6,4,2]])
 //            ->with([
 //                'category',
 //                'company',

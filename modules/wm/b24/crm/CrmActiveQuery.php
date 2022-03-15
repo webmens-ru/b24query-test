@@ -8,7 +8,7 @@ use app\modules\wm\b24\ActiveQuery;
 
 class CrmActiveQuery extends ActiveQuery {
 //    public $entityTypeId;
-
+// hello
     public function getEntityTypeIdUsedInFrom()
     {
 //        if (empty($this->entityTypeId)) {
