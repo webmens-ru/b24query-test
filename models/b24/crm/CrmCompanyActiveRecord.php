@@ -1,35 +1,37 @@
 <?php
 
-namespace app\models\b24;
+namespace app\models\b24\crm;
 
 //use yii\base\Model;
 use Bitrix24\B24Object;
 use wm\b24tools\b24Tools;
 use Yii;
 use yii\helpers\ArrayHelper;
+use app\models\b24\TableSchema;
 
 
-class CrmStatusActiveRecord extends \app\models\b24\ActiveRecord
+class CrmCompanyActiveRecord extends \app\models\b24\ActiveRecord
 {
-//    public static function entityTypeId()
-//    {
-//        return null;
-//    }
-
     public static function listMethod()
     {
-        return 'crm.status.list';
+        return 'crm.company.list';
     }
+
+    public static function oneMethod()
+    {
+        return 'crm.company.get';
+    }
+
     public static function fieldsMethod()
     {
-        return 'crm.status.fields';
+        return 'crm.company.fields';
     }
 
     public function fields()
     {
         return $this->attributes();
     }
-
+//TODO getFooter($models) точно нужно? тут
     public static function getFooter($models)
     {
         return [];
@@ -66,12 +68,13 @@ class CrmStatusActiveRecord extends \app\models\b24\ActiveRecord
         $key = static::fieldsMethod();
         $tableSchema =  $cache->getOrSet($key, function () {
             return static::internalGetTableSchema();
-        }, 30);
+//            TODO Кэширование
+        }, 300);
 //        $tableSchema = new TableSchema($schemaData);
         //Yii::warning(ArrayHelper::toArray($tableSchema), '$tableSchema');
         return $tableSchema;
     }
-
+//TODO Подумать о переносе в родительский класс
     public static function internalGetTableSchema(){
         $b24Obj = self::getConnect();
         $schemaData =   ArrayHelper::getValue($b24Obj->client->call(

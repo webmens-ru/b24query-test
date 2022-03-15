@@ -2,8 +2,8 @@
 
 namespace app\models;
 
-use app\models\b24\CrmCategoryActiveRecord;
-use app\models\b24\CrmStatusActiveRecord;
+use app\models\b24\crm\CrmCategoryActiveRecord;
+use app\models\b24\crm\CrmStatusActiveRecord;
 
 class B24Status extends CrmStatusActiveRecord
 {

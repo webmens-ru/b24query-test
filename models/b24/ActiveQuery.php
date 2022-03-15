@@ -322,7 +322,6 @@ class ActiveQuery extends Query
 
     public function populate($rows)
     {
-        Yii::warning($rows, 'populate($rows)');
         if (empty($rows)) {
             return [];
         }

@@ -1,34 +1,36 @@
 <?php
 
-namespace app\models\b24;
+namespace app\models\b24\crm;
 
 //use yii\base\Model;
 use Bitrix24\B24Object;
+use phpDocumentor\Reflection\DocBlock\Tags\Source;
 use wm\b24tools\b24Tools;
 use Yii;
 use yii\helpers\ArrayHelper;
+use app\models\b24\TableSchema;
 
 
-class SpActiveRecord extends \app\models\b24\ActiveRecord
+class SourceActiveRecord extends \app\models\b24\ActiveRecord
 {
-    public static function entityTypeId()
+    public static function entityId()
     {
-        return null;
+        return 'SOURCE';
     }
 
     public static function listMethod()
     {
-        return 'crm.item.list';
+        return 'crm.status.list';
     }
 
     public static function oneMethod()
     {
-        return 'crm.item.get';
+        return 'crm.status.get';
     }
 
     public static function fieldsMethod()
     {
-        return 'crm.item.fields';
+        return 'crm.status.fields';
     }
 
     public function fields()
@@ -43,12 +45,12 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
 
     public static function find()
     {
-        return Yii::createObject(SpActiveQuery::className(), [get_called_class()]);
+        return Yii::createObject(SourceActiveQuery::className(), [get_called_class()]);
     }
 
     public static function listDataSelector()
     {
-        return 'result.items';
+        return 'result';
     }
 
     public static function oneDataSelector()
@@ -69,10 +71,10 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
     public static function getTableSchema()
     {
         $cache = Yii::$app->cache;
-        $key = static::fieldsMethod()._.static::entityTypeId();
+        $key = static::fieldsMethod();
         $tableSchema =  $cache->getOrSet($key, function () {
             return static::internalGetTableSchema();
-        }, 30);
+        }, 300);
 //        $tableSchema = new TableSchema($schemaData);
         //Yii::warning(ArrayHelper::toArray($tableSchema), '$tableSchema');
         return $tableSchema;
@@ -81,8 +83,7 @@ class SpActiveRecord extends \app\models\b24\ActiveRecord
     public static function internalGetTableSchema(){
         $b24Obj = self::getConnect();
         $schemaData =   ArrayHelper::getValue($b24Obj->client->call(
-            static::fieldsMethod(), ['entityTypeId' => static::entityTypeId()]
-        ), 'result.fields');
+            static::fieldsMethod()), 'result');
         return new TableSchema($schemaData);
     }
 

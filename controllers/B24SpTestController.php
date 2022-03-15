@@ -10,7 +10,8 @@ class B24SpTestController extends B24ActiveRestController
     public $modelClass = B24SpTest::class;
     public $modelClassSearch = B24SpTestSearch::class;
 
-    public function actions() {
+    public function actions()
+    {
         $actions = parent::actions();
 //        $actions['data']['auth'] = function ()  {
 //           $userId = Yii::$app->user->id;
@@ -18,8 +19,20 @@ class B24SpTestController extends B24ActiveRestController
 //           $auth = $userModel->b24AccessParams;
 //           return ArrayHelper::toArray(json_decode($auth));
 //        };
-        $actions['data']['prepareSearchQuery'] = function($query, $requestParams){
-            return $query->with(['category']);
+        $actions['data']['prepareSearchQuery'] = function ($query, $requestParams) {
+            return $query
+                ->with([
+                    'category',
+                    'company',
+                    'contact',
+                    'createdBy0',
+                    'updatedBy0',
+                    'assignedBy',
+                    'movedBy0',
+                    'observers0',
+                    'stage',
+                    'source',
+                ]);
         };
         return $actions;
     }
@@ -34,11 +47,26 @@ class B24SpTestController extends B24ActiveRestController
 //
     public function actionTest()
     {
-        return $this->modelClass::find()->where(['id' => [8,10]])->with(['category'])->all();
+        return $this->modelClass::find()
+            ->where(['id' => [8, 10]])
+//            ->with([
+//                'category',
+//                'company',
+//                'contact',
+//                'createdBy0',
+//                'updatedBy0',
+//                'assignedBy',
+//                'movedBy0',
+//                'observers0',
+//                'stage',
+//                'source',
+//            ])
+            ->all();
 //        return $this->modelClass::find()->where(['id' => 8])->one();
     }
 
-    public function actionOne(){
+    public function actionOne()
+    {
         return $this->modelClass::find()->where(['id' => 10])->with(['category'])->one();
     }
 }

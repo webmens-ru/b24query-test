@@ -2,15 +2,11 @@
 
 namespace app\models;
 
+use app\models\b24\crm\CrmCompanyActiveRecord;
 use app\models\b24\crm\CrmCategoryActiveRecord;
 
-class B24Category extends CrmCategoryActiveRecord
+class B24Company extends CrmCompanyActiveRecord
 {
-
-    public static function entityTypeId()
-    {
-        return 174;
-    }
 
     //переделать
 //    public function rules()
@@ -38,15 +34,15 @@ class B24Category extends CrmCategoryActiveRecord
 //        ];
 //    }
 
-    public function fields()
-    {
-        return [
-            'id',
-            'title' => 'name',
-            //'opened',
-            //'test' => 'title'
-        ];
-    }
+//    public function fields()
+//    {
+//        return [
+//            'id',
+//            'title' => 'name',
+//            //'opened',
+//            //'test' => 'title'
+//        ];
+//    }
 
     /**
      * Переопределяет столбцы которые нужно выбирать из битрикс24 для оптинизации запроса
@@ -55,8 +51,8 @@ class B24Category extends CrmCategoryActiveRecord
     public function attributes()
     {
         return [
-            'id',
-            'name',
+            'ID',
+            'TITLE',
         ];
     }
 }

@@ -1,15 +1,16 @@
 <?php
 
-namespace app\models\b24;
+namespace app\models\b24\crm;
 
 //use yii\base\Model;
 use Bitrix24\B24Object;
 use wm\b24tools\b24Tools;
 use Yii;
 use yii\helpers\ArrayHelper;
+use app\models\b24\TableSchema;
 
 
-class CrmCategoryActiveRecord extends \app\models\b24\ActiveRecord
+class SpActiveRecord extends \app\models\b24\ActiveRecord
 {
     public static function entityTypeId()
     {
@@ -18,17 +19,17 @@ class CrmCategoryActiveRecord extends \app\models\b24\ActiveRecord
 
     public static function listMethod()
     {
-        return 'crm.category.list';
+        return 'crm.item.list';
     }
 
     public static function oneMethod()
     {
-        return 'crm.category.get';
+        return 'crm.item.get';
     }
 
     public static function fieldsMethod()
     {
-        return 'crm.category.fields';
+        return 'crm.item.fields';
     }
 
     public function fields()
@@ -43,17 +44,17 @@ class CrmCategoryActiveRecord extends \app\models\b24\ActiveRecord
 
     public static function find()
     {
-        return Yii::createObject(CategoryActiveQuery::className(), [get_called_class()]);
+        return Yii::createObject(SpActiveQuery::className(), [get_called_class()]);
     }
 
     public static function listDataSelector()
     {
-        return 'result.categories';
+        return 'result.items';
     }
 
     public static function oneDataSelector()
     {
-        return 'result.category';
+        return 'result';
     }
 
     /**

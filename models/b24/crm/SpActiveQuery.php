@@ -1,11 +1,12 @@
 <?php
 
-namespace app\models\b24;
+namespace app\models\b24\crm;
 
 //Код не универсален а направлен на смарт процессы стоит перенести в другой класс
 use yii\helpers\ArrayHelper;
 
-class CategoryActiveQuery extends ActiveQuery {
+class SpActiveQuery extends \app\models\b24\ActiveQuery
+{
     public $entityTypeId;
 
     public function getEntityTypeIdUsedInFrom()
@@ -19,7 +20,7 @@ class CategoryActiveQuery extends ActiveQuery {
 
     public static function oneDataSelector()
     {
-        return 'result.category';
+        return 'result.item';
     }
 
 //    protected function getPrimaryTableName()
@@ -51,8 +52,8 @@ class CategoryActiveQuery extends ActiveQuery {
         if(ArrayHelper::getValue($this->where, 'id')){
             $id = ArrayHelper::getValue($this->where, 'id');
         }
-        if(ArrayHelper::getValue($this->link, 'id')){
-            $id = ArrayHelper::getValue($this->where, 'inArray.0');
+        if($this->link){
+
         }
         $data = [
             'entityTypeId' => $this->entityTypeId,

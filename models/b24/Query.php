@@ -663,7 +663,6 @@ class Query extends Component implements QueryInterface {
         $this->method = call_user_func([$this->modelClass, 'oneMethod']);
         $data = $obB24->client->call($this->method, $this->params);
         $row = ArrayHelper::getValue($data, $this->dataSelector);
-        Yii::warning($row, '$result');
         return $row;
         //TODO Нужно ли здесь делать populate
         //return $this->populate([$rows]);

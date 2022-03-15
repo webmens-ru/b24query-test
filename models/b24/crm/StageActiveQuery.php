@@ -1,25 +1,16 @@
 <?php
 
-namespace app\models\b24;
+namespace app\models\b24\crm;
 
 //Код не универсален а направлен на смарт процессы стоит перенести в другой класс
 use yii\helpers\ArrayHelper;
+use app\models\b24\ActiveQuery;
 
-class SpActiveQuery extends ActiveQuery {
-    public $entityTypeId;
-
-    public function getEntityTypeIdUsedInFrom()
-    {
-        if (empty($this->entityTypeId)) {
-            $this->entityTypeId = $this->modelClass::entityTypeId();
-        }
-
-        return $this->entityTypeId;
-    }
+class StageActiveQuery extends ActiveQuery {
 
     public static function oneDataSelector()
     {
-        return 'result.item';
+        return 'result';
     }
 
 //    protected function getPrimaryTableName()
@@ -31,13 +22,11 @@ class SpActiveQuery extends ActiveQuery {
 //    }
 
     protected function prepairParams(){
-        $this->getEntityTypeIdUsedInFrom();
         \Yii::warning($this->orderBy, '$this->orderBy');
         $data = [
-            'entityTypeId' => $this->entityTypeId,
             'filter' => $this->where,
             'order' => $this->orderBy,
-            'select' => $this->select,
+            //'select' => $this->select,
             //Остальные параметры
         ];
         //Yii::warning($data, '$data');
@@ -45,17 +34,15 @@ class SpActiveQuery extends ActiveQuery {
     }
 
     protected function prepairOneParams(){
-        $this->getEntityTypeIdUsedInFrom();
         \Yii::warning($this->orderBy, '$this->orderBy');
         $id = null;
         if(ArrayHelper::getValue($this->where, 'id')){
             $id = ArrayHelper::getValue($this->where, 'id');
         }
-        if($this->link){
-
+        if(ArrayHelper::getValue($this->link, 'id')){
+            $id = ArrayHelper::getValue($this->where, 'inArray.0');
         }
         $data = [
-            'entityTypeId' => $this->entityTypeId,
             'id' => $id
         ];
         $this->params = $data;
