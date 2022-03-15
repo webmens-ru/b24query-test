@@ -10,7 +10,7 @@ use app\models\UsersKr;
 use app\models\User;
 use Yii;
 use yii\data\ArrayDataProvider;
-//use app\models\b24\B
+//use app\modules\wm\b24\B
 //
 class B24StatusSearch extends B24Status {
 

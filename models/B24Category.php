@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use app\models\b24\crm\CrmCategoryActiveRecord;
+use app\modules\wm\b24\crm\CrmCategoryActiveRecord;
 
 class B24Category extends CrmCategoryActiveRecord
 {

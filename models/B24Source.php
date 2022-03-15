@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use app\models\b24\crm\SourceActiveRecord;
+use app\modules\wm\b24\crm\SourceActiveRecord;
 
 class B24Source extends SourceActiveRecord
 {

@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use app\models\b24\crm\SpActiveRecord;
+use app\modules\wm\b24\crm\SpActiveRecord;
 
 class B24SpTest extends SpActiveRecord
 {

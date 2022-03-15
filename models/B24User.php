@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use app\models\b24\user\UserActiveRecord;
+use app\modules\wm\b24\user\UserActiveRecord;
 
 class B24User extends UserActiveRecord
 {

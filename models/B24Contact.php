@@ -2,9 +2,9 @@
 
 namespace app\models;
 
-use app\models\b24\crm\CrmCompanyActiveRecord;
-use app\models\b24\crm\CrmCategoryActiveRecord;
-use app\models\b24\crm\CrmContactActiveRecord;
+use app\modules\wm\b24\crm\CrmCompanyActiveRecord;
+use app\modules\wm\b24\crm\CrmCategoryActiveRecord;
+use app\modules\wm\b24\crm\CrmContactActiveRecord;
 
 class B24Contact extends CrmContactActiveRecord
 {

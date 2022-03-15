@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use app\models\b24\crm\StageActiveRecord;
+use app\modules\wm\b24\crm\StageActiveRecord;
 
 class B24Stage extends StageActiveRecord
 {
