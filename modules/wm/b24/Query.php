@@ -8,6 +8,7 @@ use Yii;
 use yii\base\Component;
 use yii\base\NotSupportedException;
 use yii\helpers\ArrayHelper;
+use yii\db\QueryInterface;
 
 //Код не универсален а направлен на смарт процессы стоит перенести в другой класс
 class Query extends Component implements QueryInterface {
