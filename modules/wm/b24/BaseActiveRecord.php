@@ -18,6 +18,7 @@ use yii\base\ModelEvent;
 use yii\base\NotSupportedException;
 use yii\base\UnknownMethodException;
 use yii\helpers\ArrayHelper;
+use yii\db\ActiveRecordInterface;
 
 /**
  * ActiveRecord is the base class for classes representing relational data in terms of objects.
