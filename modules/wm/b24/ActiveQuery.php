@@ -8,10 +8,11 @@ use Yii;
 use yii\base\Component;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
+use yii\db\ActiveQueryInterface;
 use yii\helpers\ArrayHelper;
 
 //Код не универсален а направлен на смарт процессы стоит перенести в другой класс
-class ActiveQuery extends Query
+class ActiveQuery extends Query implements ActiveQueryInterface
 {
 
 //    public $sql;
