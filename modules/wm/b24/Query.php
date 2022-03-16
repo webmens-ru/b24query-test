@@ -131,21 +131,17 @@ class Query extends Component implements QueryInterface {
         $component = new b24Tools();
         $b24App = null;// $component->connectFromUser($auth);
         if($auth === null){
-            Yii::warning('connectFromAdmin');
             $b24App = $component->connectFromAdmin();
         }else{
-            Yii::warning('connectFromUser');
             $b24App = $component->connectFromUser($auth);
         }
         $obB24 = new B24Object($b24App);
         $rows = [];
         //TODO Исправить
         if(!$this->limit){
-            Yii::warning($this->limit, '$this->limit');
             //TODO передавать в функцию limit и ofset
             $rows = $this->getFullData($obB24);
         }else{
-            Yii::warning($this->limit, '$this->limit');
             $rows = $this->getData($obB24);
         }
         //TODO Нужно ли здесь делать populate
@@ -227,7 +223,6 @@ class Query extends Component implements QueryInterface {
 //    }
 
     public function andFilterCompare($name, $value, $defaultOperator = '=') {
-        Yii::warning([$name, $value], 'andFilterCompare');
 //        if (preg_match('/^(<>|>=|>|<=|<|=)/', (string)$value, $matches)) {
 //            $operator = $matches[1];
 //            $value = substr($value, strlen($operator));
@@ -273,7 +268,6 @@ class Query extends Component implements QueryInterface {
 //            $c = $operator.$name." ".$value;
 //            Yii::warning([$operator, $name, $value], 'return2');
             $this->andFilterWhere([$operator, $name, $value]);
-            Yii::warning(ArrayHelper::toArray($this),'ArrayHelper::toArray($this)');
             return $this;
 
         }
@@ -315,7 +309,6 @@ class Query extends Component implements QueryInterface {
 
 //            Остальные параметры
         ];
-        Yii::warning($data, '$data');
         $this->params = $data;
     }
 
@@ -323,7 +316,6 @@ class Query extends Component implements QueryInterface {
         //$this->getEntityTypeIdUsedInFrom();/
         $data = [
         ];
-        Yii::warning($data, '$data');
         $this->params = $data;
     }
 
@@ -668,10 +660,8 @@ class Query extends Component implements QueryInterface {
         $component = new b24Tools();
         $b24App = null;// $component->connectFromUser($auth);
         if($auth === null){
-            Yii::warning('connectFromAdmin');
             $b24App = $component->connectFromAdmin();
         }else{
-            Yii::warning('connectFromUser');
             $b24App = $component->connectFromUser($auth);
         }
         $obB24 = new B24Object($b24App);
@@ -761,14 +751,12 @@ class Query extends Component implements QueryInterface {
      */
     public function andWhere($condition)
     {
-        \Yii::warning($condition, 'andWhere($condition)');
         $condition = $this->conditionPrepare($condition);
         if ($this->where === null) {
             $this->where = $condition;
         } else {
             $this->where = array_merge($this->where, $condition);
         }
-        \Yii::warning($this->where, '$this->where3');
         return $this;
     }
 
@@ -915,7 +903,6 @@ class Query extends Component implements QueryInterface {
         }
 
         if (!isset($condition[0])) {
-            \Yii::warning($condition, 'if (!isset($condition[0]))');
             // hash format: 'column1' => 'value1', 'column2' => 'value2', ...
             foreach ($condition as $name => $value) {
                 if ($this->isEmpty($value)) {
