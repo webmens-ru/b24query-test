@@ -18,6 +18,7 @@ use yii\base\ModelEvent;
 use yii\base\NotSupportedException;
 use yii\base\UnknownMethodException;
 use yii\helpers\ArrayHelper;
+use yii\db\ActiveRecordInterface;
 
 /**
  * ActiveRecord is the base class for classes representing relational data in terms of objects.
@@ -676,7 +677,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function save($runValidation = true, $attributeNames = null)
     {
-        Yii::warning('save');
         if ($this->getIsNewRecord()) {
             return $this->insert($runValidation, $attributeNames);
         }
@@ -738,7 +738,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function update($runValidation = true, $attributeNames = null)
     {
-        Yii::warning('update');
         if ($runValidation && !$this->validate($attributeNames)) {
             return false;
         }
@@ -795,7 +794,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     protected function updateInternal($attributes = null)
     {
-        Yii::warning('updateInternal');
         if (!$this->beforeSave(false)) {
             return false;
         }
@@ -851,7 +849,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function updateCounters($counters)
     {
-        Yii::warning('updateCounters');
         if (static::updateAllCounters($counters, $this->getOldPrimaryKey(true)) > 0) {
             foreach ($counters as $name => $value) {
                 if (!isset($this->_attributes[$name])) {
@@ -889,7 +886,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function delete()
     {
-        Yii::warning('delete');
         $result = false;
         if ($this->beforeDelete()) {
             // we do not check the return value of deleteAll() because it's possible
@@ -1072,7 +1068,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     protected function refreshInternal($record)
     {
-        Yii::warning('refreshInternal');
         if ($record === null) {
             return false;
         }
@@ -1096,7 +1091,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function afterRefresh()
     {
-        Yii::warning('afterRefresh');
         $this->trigger(self::EVENT_AFTER_REFRESH);
     }
 
@@ -1161,7 +1155,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function getOldPrimaryKey($asArray = false)
     {
-        Yii::warning('getOldPrimaryKey');
         $keys = static::primaryKey();
         if (empty($keys)) {
             throw new Exception(get_class($this) . ' does not have a primary key. You should either define a primary key for the corresponding table or override the primaryKey() method.');
@@ -1212,7 +1205,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
 
     public static function populateRecord($record, $row)
     {
-        Yii::warning($record->attributes());
         $columns = array_flip($record->attributes());
         foreach ($row as $name => $value) {
             if (isset($columns[$name])) {
@@ -1221,7 +1213,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
                 $record->$name = $value;
             }
         }
-        Yii::warning($record->_attributes, '$record->_attributes');
         $record->_oldAttributes = $record->_attributes;
         $record->_related = [];
         $record->_relationsDependencies = [];
@@ -1288,9 +1279,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
 //
 //            return null;
 //        }
-Yii::warning($getter, '$getter');
         if (method_exists($this, $getter)) {
-            Yii::warning($getter, '$getter1');
             // relation name is case sensitive, trying to validate it when the relation is defined within this class
             $method = new \ReflectionMethod($this, $getter);
             $realName = lcfirst(substr($method->getName(), 3));
@@ -1323,12 +1312,10 @@ Yii::warning($getter, '$getter');
      * @param ActiveRecordInterface $model the model to be linked with the current one.
      * @param array $extraColumns additional column values to be saved into the junction table.
      * This parameter is only meaningful for a relationship involving a junction table
-     * (i.e., a relation set with [[ActiveRelationTrait::via()]] or [[ActiveQuery::viaTable()]].)
      * @throws InvalidCallException if the method is unable to link two models.
      */
     public function link($name, $model, $extraColumns = [])
     {
-        Yii::warning('link');
         /* @var $relation ActiveQueryInterface|ActiveQuery */
         $relation = $this->getRelation($name);
 
@@ -1425,7 +1412,6 @@ Yii::warning($getter, '$getter');
      */
     public function unlink($name, $model, $delete = false)
     {
-        Yii::warning('unlink');
         /* @var $relation ActiveQueryInterface|ActiveQuery */
         $relation = $this->getRelation($name);
 
@@ -1529,7 +1515,6 @@ Yii::warning($getter, '$getter');
      */
     public function unlinkAll($name, $delete = false)
     {
-        Yii::warning('unlinkAll');
         /* @var $relation ActiveQueryInterface|ActiveQuery */
         $relation = $this->getRelation($name);
 
@@ -1611,7 +1596,6 @@ Yii::warning($getter, '$getter');
      */
     private function bindModels($link, $foreignModel, $primaryModel)
     {
-        Yii::warning('bindModels');
         foreach ($link as $fk => $pk) {
             $value = $primaryModel->$pk;
             if ($value === null) {
@@ -1694,7 +1678,6 @@ Yii::warning($getter, '$getter');
      */
     public function getAttributeHint($attribute)
     {
-        Yii::warning('getAttributeHint');
         $hints = $this->attributeHints();
         if (isset($hints[$attribute])) {
             return $hints[$attribute];
@@ -1755,7 +1738,6 @@ Yii::warning($getter, '$getter');
      */
     public function extraFields()
     {
-        Yii::warning('extraFields');
         $fields = array_keys($this->getRelatedRecords());
 
         return array_combine($fields, $fields);
@@ -1769,7 +1751,6 @@ Yii::warning($getter, '$getter');
      */
     public function offsetUnset($offset)
     {
-        Yii::warning('offsetUnset');
         if (property_exists($this, $offset)) {
             $this->$offset = null;
         } else {
@@ -1783,7 +1764,6 @@ Yii::warning($getter, '$getter');
      */
     private function resetDependentRelations($attribute)
     {
-        Yii::warning('resetDependentRelations');
         foreach ($this->_relationsDependencies[$attribute] as $relation) {
             unset($this->_related[$relation]);
         }
@@ -1798,7 +1778,6 @@ Yii::warning($getter, '$getter');
      */
     private function setRelationDependencies($name, $relation, $viaRelationName = null)
     {
-        Yii::warning('setRelationDependencies');
         if (empty($relation->via) && $relation->link) {
             foreach ($relation->link as $attribute) {
                 $this->_relationsDependencies[$attribute][$name] = $name;

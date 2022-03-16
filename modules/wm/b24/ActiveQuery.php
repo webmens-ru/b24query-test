@@ -8,15 +8,12 @@ use Yii;
 use yii\base\Component;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
+use yii\db\ActiveQueryInterface;
 use yii\helpers\ArrayHelper;
 
 //Код не универсален а направлен на смарт процессы стоит перенести в другой класс
-class ActiveQuery extends Query
+class ActiveQuery extends Query implements ActiveQueryInterface
 {
-//    use ActiveQueryTrait;
-
-
-//    use ActiveRelationTrait;
 
 //    public $sql;
 //    public $on;
@@ -125,7 +122,6 @@ class ActiveQuery extends Query
      */
     public function asArray($value = true)
     {
-        \Yii::warning('asArray', 'aqt');
         $this->asArray = $value;
         return $this;
     }
@@ -169,7 +165,6 @@ class ActiveQuery extends Query
      */
     public function with()
     {
-        \Yii::warning('with', 'aqt');
         $with = func_get_args();
         if (isset($with[0]) && is_array($with[0])) {
             // the parameter is given as an array
@@ -188,7 +183,6 @@ class ActiveQuery extends Query
                 }
             }
         }
-        Yii::warning(ArrayHelper::toArray($this), '$this');
         return $this;
     }
 
@@ -230,16 +224,13 @@ class ActiveQuery extends Query
      */
     public function findWith($with, &$models)
     {
-        \Yii::warning('findWith', 'aqt');
         $primaryModel = reset($models);
         if (!$primaryModel instanceof ActiveRecordInterface) {
-            \Yii::warning('234', 'aqt');
             /* @var $modelClass ActiveRecordInterface */
             $modelClass = $this->modelClass;
             $primaryModel = $modelClass::instance();
         }
         $relations = $this->normalizeRelations($primaryModel, $with);
-        Yii::warning(ArrayHelper::toArray($relations), 'aqt');
         /* @var $relation ActiveQuery */
         foreach ($relations as $name => $relation) {
             if ($relation->asArray === null) {
@@ -371,14 +362,12 @@ class ActiveQuery extends Query
         $request = $obB24->client->call($this->method, $this->params);
         $countCalls = (int)ceil($request['total'] / $obB24->client::MAX_BATCH_CALLS);
         $data = ArrayHelper::getValue($request, $this->listDataSelector);
-        Yii::warning($data, '$data');
         if (count($data) != $request['total']) {
             for ($i = 1; $i < $countCalls; $i++)
                 $obB24->client->addBatchCall($this->method,
                     array_merge($this->params, ['start' => $obB24->client::MAX_BATCH_CALLS * $i]),
                     function ($result) use (&$data) {
                         $data = array_merge($data, ArrayHelper::getValue($result, $this->listDataSelector));
-                        Yii::warning($data, '$data1');
                     }
                 );
             $obB24->client->processBatchCalls();
@@ -929,7 +918,6 @@ class ActiveQuery extends Query
      */
     private function addInverseRelations(&$result)
     {
-        \Yii::warning('addInverseRelations');
 //        if ($this->inverseOf === null) {
 //            return;
 //        }
@@ -960,20 +948,17 @@ class ActiveQuery extends Query
      */
     public function populateRelation($name, &$primaryModels)
     {
-        \Yii::warning('populateRelation');
         if (!is_array($this->link)) {
             throw new InvalidConfigException('Invalid link: it must be an array of key-value pairs.');
         }
 
         if ($this->via instanceof self) {
             // via junction table
-            /* @var $viaQuery ActiveRelationTrait */
 //            $viaQuery = $this->via;
 //            $viaModels = $viaQuery->findJunctionRows($primaryModels);
 //            $this->filterByModels($viaModels);
         } elseif (is_array($this->via)) {
             // via relation
-            /* @var $viaQuery ActiveRelationTrait|ActiveQueryTrait */
             list($viaName, $viaQuery) = $this->via;
             if ($viaQuery->asArray === null) {
                 // inherit asArray from primary query
@@ -1072,7 +1057,6 @@ class ActiveQuery extends Query
      */
     private function populateInverseRelation(&$primaryModels, $models, $primaryName, $name)
     {
-        \Yii::warning('populateInverseRelation');
 //        if (empty($models) || empty($primaryModels)) {
 //            return;
 //        }
@@ -1358,7 +1342,6 @@ class ActiveQuery extends Query
      */
     private function findJunctionRows($primaryModels)
     {
-        \Yii::warning('findJunctionRows');
 //        if (empty($primaryModels)) {
 //            return [];
 //        }
