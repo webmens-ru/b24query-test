@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace app\modules\wm\b24;
+namespace app\modules\wm\data;
 
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
