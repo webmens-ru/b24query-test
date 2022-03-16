@@ -11,7 +11,7 @@ class RestController extends \wm\admin\controllers\RestController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        //test
+        //test22
 
         return [
             'corsFilter' => [
