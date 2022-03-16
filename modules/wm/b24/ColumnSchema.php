@@ -157,7 +157,6 @@ class ColumnSchema extends BaseObject
     protected function typecast($value)
     {
         //TODO переписать для Б24
-//        \Yii::warning($value, 'typecast($value)');
 //        if ($value === ''
 //            && !in_array(
 //                $this->type,

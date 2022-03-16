@@ -1635,7 +1635,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function getAttributeLabel($attribute)
     {
-//        Yii::warning('getAttributeLabel');
         $labels = $this->attributeLabels();
         if (isset($labels[$attribute])) {
             return $labels[$attribute];
@@ -1727,7 +1726,6 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     public function fields()
     {
 //        $fields = ['id'=>'id', 'title'=>'title'];//array_keys($this->_attributes);
-//        Yii::warning(array_combine($fields, $fields), 'array_combine($fields, $fields)');
         return [];// array_combine($fields, $fields);
     }
 

@@ -118,15 +118,10 @@ class Query extends Component implements QueryInterface {
     }
 
     public function all($auth = null){
-//        Yii::warning('function all($auth = null)');
-//        Yii::warning($this->where, '$this->where1');
-//        Yii::warning($this->params, '$this->params1');
         if ($this->emulateExecution) {
             return [];
         }
         $this->prepairParams();
-//        Yii::warning($this->where, '$this->where2');
-//        Yii::warning($this->params, '$this->params2');
         //TODO вынести часть логики
         $component = new b24Tools();
         $b24App = null;// $component->connectFromUser($auth);
@@ -174,11 +169,9 @@ class Query extends Component implements QueryInterface {
 //    }
 
 //    private function getFullData($obB24){
-//        Yii::warning('getFullData($obB24)');
 //        $request = $obB24->client->call($this->method, $this->params);;
 //        $countCalls = (int)ceil($request['total'] / $obB24->client::MAX_BATCH_CALLS);
 //        $data = ArrayHelper::getValue($request, 'result.items');
-//        Yii::warning($data, '$data');
 //        for ($i = 1; $i < $countCalls; $i++)
 //            $obB24->client->addBatchCall('crm.item.list', [
 //                'entityTypeId' => $this->entityTypeId,
@@ -188,7 +181,6 @@ class Query extends Component implements QueryInterface {
 //                $data = array_merge($data, ArrayHelper::getValue($result, 'result.items'));
 //            });
 //        $obB24->client->processBatchCalls();
-//        Yii::warning($data, '$data');
 //        return $data; //Добавить вывод дополнительной информации
 //    }
 
@@ -241,7 +233,6 @@ class Query extends Component implements QueryInterface {
             foreach ($arr as $var) {
                 $this->andFilterCompare($name, $var);
             }
-//            Yii::warning($arr, 'return1');
             return $this;
         } else {
             if (preg_match('/^(>=|>|<=|<|=)/', $value, $matches)) {
@@ -266,7 +257,6 @@ class Query extends Component implements QueryInterface {
                 $operator = $defaultOperator;
             }
 //            $c = $operator.$name." ".$value;
-//            Yii::warning([$operator, $name, $value], 'return2');
             $this->andFilterWhere([$operator, $name, $value]);
             return $this;
 
@@ -672,14 +662,12 @@ class Query extends Component implements QueryInterface {
 //        $request = $obB24->client->call($this->method, $this->params);
 //        $countCalls = (int)ceil($request['total'] / $obB24->client::MAX_BATCH_CALLS);
 //        $data = ArrayHelper::getValue($request, $this->listDataSelector);
-//        Yii::warning($data, '$data');
 //        if (count($data) != $request['total']) {
 //            for ($i = 1; $i < $countCalls; $i++)
 //                $obB24->client->addBatchCall($this->method,
 //                    array_merge($this->params, ['start' => $obB24->client::MAX_BATCH_CALLS * $i]),
 //                    function ($result) use (&$data) {
 //                        $data = array_merge($data, ArrayHelper::getValue($result, $this->listDataSelector));
-//                        Yii::warning($data, '$data1');
 //                    }
 //                );
 //            $obB24->client->processBatchCalls();
@@ -856,7 +844,6 @@ class Query extends Component implements QueryInterface {
      */
     public function andFilterWhere(array $condition)
     {
-//        \Yii::warning('andFilterWhere');
         $condition = $this->filterCondition($condition);
         if ($condition !== []) {
             $this->andWhere($condition);
@@ -943,9 +930,7 @@ class Query extends Component implements QueryInterface {
                 }
                 break;
             default:
-//                \Yii::warning($condition, 'default');
                 if (array_key_exists(1, $condition) && $this->isEmpty($condition[1])) {
-//                    \Yii::warning($condition, 'default1');
                     return [];
                 }
         }

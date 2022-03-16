@@ -102,7 +102,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
 
     public function __construct($modelClass, $config = [])
     {
-//        Yii::warning($modelClass, '$modelClass');
         $this->modelClass = $modelClass;
         $this->select = $this->modelClass::attributes();
         //$this->listMethod = $modelClass::listMethod();
@@ -194,7 +193,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      */
     protected function createModels($rows)
     {
-//        \Yii::warning('createModels', 'aqt');
         if ($this->asArray) {
             return $rows;
         } else {
@@ -204,10 +202,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface
             foreach ($rows as $row) {
 
                 $model = $class::instantiate($row);
-                //\Yii::warning($row, '$row');
                 //$model->load($row, '');
-//                \Yii::warning($model, '$model');
-//                \Yii::warning(ArrayHelper::toArray($model), '$model as array');
                 $modelClass = get_class($model);
                 $modelClass::populateRecord($model, $row);//
                 $models[] = $model;
@@ -476,7 +471,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
         $row = parent::one($auth);
         if ($row !== false) {
             $models = $this->populate([$row]);
-            //Yii::warning($models);
             return reset($models) ?: null;
         }
 
