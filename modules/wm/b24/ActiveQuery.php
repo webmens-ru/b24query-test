@@ -13,10 +13,6 @@ use yii\helpers\ArrayHelper;
 //Код не универсален а направлен на смарт процессы стоит перенести в другой класс
 class ActiveQuery extends Query
 {
-//    use ActiveQueryTrait;
-
-
-//    use ActiveRelationTrait;
 
 //    public $sql;
 //    public $on;
@@ -967,13 +963,11 @@ class ActiveQuery extends Query
 
         if ($this->via instanceof self) {
             // via junction table
-            /* @var $viaQuery ActiveRelationTrait */
 //            $viaQuery = $this->via;
 //            $viaModels = $viaQuery->findJunctionRows($primaryModels);
 //            $this->filterByModels($viaModels);
         } elseif (is_array($this->via)) {
             // via relation
-            /* @var $viaQuery ActiveRelationTrait|ActiveQueryTrait */
             list($viaName, $viaQuery) = $this->via;
             if ($viaQuery->asArray === null) {
                 // inherit asArray from primary query
