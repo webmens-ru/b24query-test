@@ -454,17 +454,17 @@ class ActiveQuery extends Query implements ActiveQueryInterface
     }
 
     /**
-     * Specifies the relations with which this query should be performed.
+     * Задает отношения, с которыми должен выполняться этот запрос.
      *
-     * The parameters to this method can be either one or multiple strings, or a single array
-     * of relation names and the optional callbacks to customize the relations.
+     * Параметрами этого метода могут быть одна или несколько строк или один массив
+     * имен отношений и необязательных обратных вызовов для настройки отношений.
      *
-     * A relation name can refer to a relation defined in [[modelClass]]
-     * or a sub-relation that stands for a relation of a related record.
-     * For example, `orders.address` means the `address` relation defined
-     * in the model class corresponding to the `orders` relation.
+     * Имя отношения может ссылаться на отношение, определенное в [[modelClass]]
+     * или подотношение, обозначающее отношение связанной записи.
+     * Например, `orders.address` означает отношение `адрес`, определенное
+     * в модельном классе, соответствующем отношению `orders`.
      *
-     * The following are some usage examples:
+     * Ниже приведены некоторые примеры использования:
      *
      * ```php
      * // find customers together with their orders and country
