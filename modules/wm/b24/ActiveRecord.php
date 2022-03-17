@@ -387,7 +387,6 @@ class ActiveRecord extends BaseActiveRecord
      */
     /*public function transactions()
     {
-        Yii::warning('transactions', 'ar');
         return [];
     }*/
 

@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace app\modules\wm\b24;
+namespace app\modules\wm\data;
 
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
@@ -51,24 +51,18 @@ class B24DataProvider extends BaseDataProvider
 
     protected function prepareModels()
     {
-//        Yii::warning('prepareModels', 'prepareModels');
-
 //        if (!$this->query instanceof QueryInterface) {
 //            throw new InvalidConfigException('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
 //        }
         $query = clone $this->query;
-        //Yii::warning($query, 'dp');
         if (($pagination = $this->getPagination()) !== false) {
 //            $pagination->totalCount = $this->getTotalCount();
 //            if ($pagination->totalCount === 0) {
-//                Yii::warning($pagination->totalCount, '$pagination->totalCount');
 //                return [];
 //            }
             $query->limit($pagination->getLimit())->offset($pagination->getOffset());
         }
-        Yii::warning(ArrayHelper::toArray($this->getSort()), '$this->getSort()');
         if (($sort = $this->getSort()) !== false) {
-            Yii::warning($sort->getOrders(),'$sort->getOrders()');
             $query->addOrderBy($sort->getOrders());
         }
 //
@@ -99,14 +93,11 @@ class B24DataProvider extends BaseDataProvider
         parent::setSort($value);
         //TODO исправить
         if (/*$this->query instanceof ActiveQueryInterface && */($sort = $this->getSort()) !== false) {
-            Yii::warning(ArrayHelper::toArray($sort), 102);
             /* @var $modelClass Model */
             $modelClass = $this->query->modelClass;
             $model = $modelClass::instance();
             if (empty($sort->attributes)) {
                 foreach ($model->attributes() as $attribute) {
-//                    Yii::warning($model->attributes(),'$model->attributes()');
-//                    Yii::warning($attribute,'$attribute109');
                     $sort->attributes[$attribute] = [
                         'asc' => [$attribute => SORT_ASC],
                         'desc' => [$attribute => SORT_DESC],
