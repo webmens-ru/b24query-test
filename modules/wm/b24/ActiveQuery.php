@@ -41,7 +41,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      */
     public $link;
 
-    public $listDataSelector = 'result';
+//    public $listDataSelector = 'result';
 
     /**
      * @var string the name of the ActiveRecord class.
@@ -77,19 +77,13 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      */
     public $with;
 
-    /**
-     * @var bool whether to return each record as an array. If false (default), an object
-     * of [[modelClass]] will be created to represent each record.
-     */
-    public $asArray;
-
     protected $listMethodName;
 
     protected $oneMethodName;
 
-    protected $listDataSelectorName = 'result';
+    protected $listDataSelector = 'result';
 
-    protected $oneDataSelectorName = 'result';
+    protected $oneDataSelector = 'result';
 
 //    public $sql;
 //    public $on;
@@ -191,22 +185,20 @@ class ActiveQuery extends Query implements ActiveQueryInterface
 
     public function getData($obB24)
     {
-        $this->method = call_user_func([$this->modelClass, 'listMethod']);
         $this->listDataSelector = $this->getListDataSelector();
-        $request = $obB24->client->call($this->method, $this->params);
+        $request = $obB24->client->call($this->listMethodName, $this->params);
         return ArrayHelper::getValue($request, $this->listDataSelector);
     }
 
     public function getFullData($obB24)
     {
-        $this->method = call_user_func([$this->modelClass, 'listMethod']);
         $this->listDataSelector = $this->getListDataSelector();
-        $request = $obB24->client->call($this->method, $this->params);
+        $request = $obB24->client->call($this->listMethodName, $this->params);
         $countCalls = (int)ceil($request['total'] / $obB24->client::MAX_BATCH_CALLS);
         $data = ArrayHelper::getValue($request, $this->listDataSelector);
         if (count($data) != $request['total']) {
             for ($i = 1; $i < $countCalls; $i++)
-                $obB24->client->addBatchCall($this->method,
+                $obB24->client->addBatchCall($this->listMethodName,
                     array_merge($this->params, ['start' => $obB24->client::MAX_BATCH_CALLS * $i]),
                     function ($result) use (&$data) {
                         $data = array_merge($data, ArrayHelper::getValue($result, $this->listDataSelector));
