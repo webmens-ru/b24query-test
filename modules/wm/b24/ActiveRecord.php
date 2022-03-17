@@ -281,12 +281,32 @@ class ActiveRecord extends BaseActiveRecord
      * with prefix [[Connection::tablePrefix]]. For example if [[Connection::tablePrefix]] is `tbl_`,
      * `Customer` becomes `tbl_customer`, and `OrderItem` becomes `tbl_order_item`. You may override this method
      * if the table is not named after this convention.
-     * @return string the table name
+     * @return int[]|string|string[]
      */
 //    public static function tableName()
 //    {
 //        return '{{%' . Inflector::camel2id(StringHelper::basename(get_called_class()), '_') . '}}';
 //    }
+
+    public static function fieldsMethod()
+    {
+        return '';
+    }
+
+    public static function tableSchemaCaheKey()
+    {
+        return static::fieldsMethod();
+    }
+
+    public static function getValueKey()
+    {
+        return 'result';
+    }
+
+    public static function callAdditionalParameters()
+    {
+        return [];
+    }
 
     /**
      * Возвращает информацию о схеме таблицы БД, связанной с этим классом AR.
@@ -295,7 +315,17 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function getTableSchema()
     {
-        return null;
+        $cache = Yii::$app->cache;
+        $key = static::tableSchemaCaheKey();
+        $tableSchema =  $cache->getOrSet($key, function () {
+            $b24Obj = self::getConnect();
+            $schemaData =   ArrayHelper::getValue($b24Obj->client->call(
+                static::fieldsMethod(), static::callAdditionalParameters()
+            ), static::getValueKey());
+            return new TableSchema($schemaData);
+        }, 300);
+        //Yii::warning(ArrayHelper::toArray($tableSchema), '$tableSchema');
+        return $tableSchema;
     }
 
     /**
@@ -325,7 +355,7 @@ class ActiveRecord extends BaseActiveRecord
      */
     public function attributes()
     {
-        return [];
+        return array_keys(static::getTableSchema()->columns);;
     }
 
     /**

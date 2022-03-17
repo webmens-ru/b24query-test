@@ -23,14 +23,13 @@ class Query extends Component implements QueryInterface {
 //    public $withQueries;
 //    public $queryCacheDuration;
 //    public $queryCacheDependency;
-
+	protected $oneDataSelectorName;
 
     public $select;
     /**
      * Список массивов @var значений параметров запроса, проиндексированных заполнителями параметров.
      * Например, `[':name' => 'Дэн', ':age' => 31]`.
      */
-
     public $params = [];
 
     /**
@@ -82,11 +81,6 @@ class Query extends Component implements QueryInterface {
     public $method = '';
 
 
-
-    public static function oneDataSelector()
-    {
-        return 'result';
-    }
 
     public function all($auth = null){
         if ($this->emulateExecution) {
@@ -235,12 +229,9 @@ class Query extends Component implements QueryInterface {
         }
         $obB24 = new B24Object($b24App);
 
-//        TODO: $this->oneDataSelector()
-        $this->dataSelector = $this->oneDataSelector();
-//        TODO: call_user_func([$this->modelClass, 'oneMethod']);
-        $this->method = call_user_func([$this->modelClass, 'oneMethod']);
+        $this->method = $this->oneMethodName;
         $data = $obB24->client->call($this->method, $this->params);
-        $row = ArrayHelper::getValue($data, $this->dataSelector);
+        $row = ArrayHelper::getValue($data, $this->oneDataSelectorName);
         return $row;
     }
 
