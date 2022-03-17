@@ -8,7 +8,7 @@ use wm\b24tools\b24Tools;
 use Yii;
 use yii\helpers\ArrayHelper;
 use app\modules\wm\b24\TableSchema;
-// hello 222
+
 class CrmCategoryActiveRecord extends \app\modules\wm\b24\ActiveRecord
 {
     public static function entityTypeId()

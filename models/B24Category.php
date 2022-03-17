@@ -9,7 +9,7 @@ class B24Category extends CrmCategoryActiveRecord
 
     public static function entityTypeId()
     {
-        return 175;
+        return 174;
     }
 
     //переделать
