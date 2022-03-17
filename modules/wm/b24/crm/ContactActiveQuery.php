@@ -3,6 +3,7 @@
 
 namespace app\modules\wm\b24\crm;
 
+use yii\helpers\ArrayHelper;
 
 class ContactActiveQuery extends \app\modules\wm\b24\ActiveQuery
 {
@@ -45,7 +46,6 @@ class ContactActiveQuery extends \app\modules\wm\b24\ActiveQuery
 
     protected function prepairOneParams(){
         $this->getEntityTypeIdUsedInFrom();
-        \Yii::warning($this->orderBy, '$this->orderBy');
         $id = null;
         if(ArrayHelper::getValue($this->where, 'id')){
             $id = ArrayHelper::getValue($this->where, 'id');
