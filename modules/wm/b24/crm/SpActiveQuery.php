@@ -13,7 +13,7 @@ class SpActiveQuery extends \app\modules\wm\b24\ActiveQuery
 
     protected $oneMethodName = 'crm.item.get';
 
-    protected $listDataSelectorName = 'result.items';
+    protected $listDataSelector = 'result.items';
 
     public function getEntityTypeIdUsedInFrom()
     {

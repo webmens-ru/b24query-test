@@ -32,6 +32,8 @@ class Query extends Component implements QueryInterface {
      */
     public $params = [];
 
+    protected $errorsParams = false;
+
     /**
      * @var string|array|ExpressionInterface|пустое условие запроса. Это относится к предложению WHERE в операторе SQL.
      * Например, `['возраст' => 31, 'команда' => 1]`.
@@ -220,6 +222,10 @@ class Query extends Component implements QueryInterface {
 
         $this->prepairOneParams();
 
+        if(!$this->errorsParams){
+            return [];
+        }
+
         $component = new b24Tools();
         $b24App = null;// $component->connectFromUser($auth);
         if($auth === null){
@@ -229,7 +235,7 @@ class Query extends Component implements QueryInterface {
         }
         $obB24 = new B24Object($b24App);
 
-        $this->method = call_user_func([$this->modelClass, 'oneMethod']);
+        $this->method = $this->oneMethodName;
         $data = $obB24->client->call($this->method, $this->params);
         $row = ArrayHelper::getValue($data, $this->oneDataSelectorName);
         return $row;

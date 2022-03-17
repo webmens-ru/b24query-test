@@ -13,9 +13,9 @@ class CategoryActiveQuery extends ActiveQuery {
 
     protected $oneMethodName = 'crm.category.get';
 
-    protected $listDataSelectorName = 'result.categories';
+    protected $listDataSelector = 'result.categories';
 
-    protected $oneDataSelectorName = 'result.category';
+    protected $oneDataSelector = 'result.category';
 
     public function getEntityTypeIdUsedInFrom()
     {
