@@ -9,6 +9,14 @@ class UserActiveQuery extends \app\modules\wm\b24\ActiveQuery
 {
 //    public $entityTypeId;
 
+    protected $listMethodName = 'user.get';
+
+    protected $oneMethodName = 'user.get';
+
+    protected $listDataSelectorName = 'result';
+
+    protected $oneDataSelectorName = 'result.0';
+
     public function getEntityTypeIdUsedInFrom()
     {
 //        if (empty($this->entityTypeId)) {
@@ -40,11 +48,6 @@ class UserActiveQuery extends \app\modules\wm\b24\ActiveQuery
         $this->params = $data;
     }
 
-    public static function oneDataSelector()
-    {
-        return 'result.0';
-    }
-
     protected function prepairOneParams(){
         $this->getEntityTypeIdUsedInFrom();
         \Yii::warning($this->orderBy, '$this->orderBy');
@@ -56,7 +59,7 @@ class UserActiveQuery extends \app\modules\wm\b24\ActiveQuery
             $id = ArrayHelper::getValue($this->where, 'inArray.0');
         }
         $data = [
-            'entityTypeId' => $this->entityTypeId,
+//            'entityTypeId' => $this->entityTypeId,
             'id' => $id
         ];
         $this->params = $data;
