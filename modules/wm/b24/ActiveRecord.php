@@ -324,7 +324,6 @@ class ActiveRecord extends BaseActiveRecord
             ), static::getValueKey());
             return new TableSchema($schemaData);
         }, 300);
-        //Yii::warning(ArrayHelper::toArray($tableSchema), '$tableSchema');
         return $tableSchema;
     }
 

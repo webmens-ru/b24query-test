@@ -14,26 +14,22 @@ class StageActiveQuery extends ActiveQuery {
 
 //    protected function getPrimaryTableName()
 //    {
-////        Yii::warning($this->modelClass, '$this->modelClass');
 //        $modelClass = $this->modelClass;
 //        //return $modelClass::tableName();
 //        return $modelClass::entityTypeId();
 //    }
 
     protected function prepairParams(){
-        \Yii::warning($this->orderBy, '$this->orderBy');
         $data = [
             'filter' => $this->where,
             'order' => $this->orderBy,
             //'select' => $this->select,
             //Остальные параметры
         ];
-        //Yii::warning($data, '$data');
         $this->params = $data;
     }
 
     protected function prepairOneParams(){
-        \Yii::warning($this->orderBy, '$this->orderBy');
         $id = null;
         if(ArrayHelper::getValue($this->where, 'id')){
             $id = ArrayHelper::getValue($this->where, 'id');

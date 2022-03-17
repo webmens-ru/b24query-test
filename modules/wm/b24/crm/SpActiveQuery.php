@@ -26,7 +26,6 @@ class SpActiveQuery extends \app\modules\wm\b24\ActiveQuery
 
 //    protected function getPrimaryTableName()
 //    {
-////        Yii::warning($this->modelClass, '$this->modelClass');
 //        $modelClass = $this->modelClass;
 //        //return $modelClass::tableName();
 //        return $modelClass::entityTypeId();
@@ -34,7 +33,6 @@ class SpActiveQuery extends \app\modules\wm\b24\ActiveQuery
 
     protected function prepairParams(){
         $this->getEntityTypeIdUsedInFrom();
-        \Yii::warning($this->orderBy, '$this->orderBy');
         $data = [
             'entityTypeId' => $this->entityTypeId,
             'filter' => $this->where,
@@ -42,13 +40,11 @@ class SpActiveQuery extends \app\modules\wm\b24\ActiveQuery
             'select' => $this->select,
             //Остальные параметры
         ];
-        //Yii::warning($data, '$data');
         $this->params = $data;
     }
 
     protected function prepairOneParams(){
         $this->getEntityTypeIdUsedInFrom();
-        \Yii::warning($this->orderBy, '$this->orderBy');
         $id = null;
         if(ArrayHelper::getValue($this->where, 'id')){
             $id = ArrayHelper::getValue($this->where, 'id');
