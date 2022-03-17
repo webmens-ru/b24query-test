@@ -9,6 +9,14 @@ class UserActiveQuery extends \app\modules\wm\b24\ActiveQuery
 {
 //    public $entityTypeId;
 
+    protected $listMethodName = 'user.get';
+
+    protected $oneMethodName = 'user.get';
+
+    protected $listDataSelectorName = 'result';
+
+    protected $oneDataSelectorName = 'result.0';
+
     public function getEntityTypeIdUsedInFrom()
     {
 //        if (empty($this->entityTypeId)) {
@@ -38,11 +46,6 @@ class UserActiveQuery extends \app\modules\wm\b24\ActiveQuery
         ];
         //Yii::warning($data, '$data');
         $this->params = $data;
-    }
-
-    public static function oneDataSelector()
-    {
-        return 'result.0';
     }
 
     protected function prepairOneParams(){

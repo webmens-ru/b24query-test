@@ -119,11 +119,11 @@ class ActiveRecord extends BaseActiveRecord
      * You may override this method if you want to use a different database connection.
      * @return Connection the database connection used by this AR class.
      */
-//    public static function getDb()
-//    {
-//        Yii::warning('getDb', 'ar');
+    public static function getDb()
+    {
 //        return Yii::$app->getDb();
-//    }
+        return null;
+    }
 
 
     /**
@@ -138,7 +138,6 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать для b24
     protected static function findByCondition($condition)
     {
-        Yii::warning('findByCondition', 'ar');
         $query = static::find();
 
         if (!ArrayHelper::isAssociative($condition) && !$condition instanceof ExpressionInterface) {
@@ -199,7 +198,6 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать для b24
     protected static function filterCondition(array $condition, array $aliases = [])
     {
-        Yii::warning('filterCondition', 'ar');
         $result = [];
         $db = static::getDb();
         $columnNames = static::filterValidColumnNames($db, $aliases);
@@ -228,7 +226,6 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать для b24 /пока не понял что это и для чего
     protected static function filterValidColumnNames($db, array $aliases)
     {
-        Yii::warning('filterValidColumnNames', 'ar');
         $columnNames = [];
         $tableName = static::tableName();
         $quotedTableName = $db->quoteTableName($tableName);
@@ -255,7 +252,6 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать для b24
     public function refresh()
     {
-        Yii::warning('refresh', 'ar');
         $query = static::find();
         $tableName = key($query->getTablesUsedInFrom());
         $pk = [];
@@ -285,12 +281,32 @@ class ActiveRecord extends BaseActiveRecord
      * with prefix [[Connection::tablePrefix]]. For example if [[Connection::tablePrefix]] is `tbl_`,
      * `Customer` becomes `tbl_customer`, and `OrderItem` becomes `tbl_order_item`. You may override this method
      * if the table is not named after this convention.
-     * @return string the table name
+     * @return int[]|string|string[]
      */
 //    public static function tableName()
 //    {
 //        return '{{%' . Inflector::camel2id(StringHelper::basename(get_called_class()), '_') . '}}';
 //    }
+
+    public static function fieldsMethod()
+    {
+        return '';
+    }
+
+    public static function tableSchemaCaheKey()
+    {
+        return static::fieldsMethod();
+    }
+
+    public static function getValueKey()
+    {
+        return 'result';
+    }
+
+    public static function callAdditionalParameters()
+    {
+        return [];
+    }
 
     /**
      * Возвращает информацию о схеме таблицы БД, связанной с этим классом AR.
@@ -299,7 +315,17 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function getTableSchema()
     {
-        return null;
+        $cache = Yii::$app->cache;
+        $key = static::tableSchemaCaheKey();
+        $tableSchema =  $cache->getOrSet($key, function () {
+            $b24Obj = self::getConnect();
+            $schemaData =   ArrayHelper::getValue($b24Obj->client->call(
+                static::fieldsMethod(), static::callAdditionalParameters()
+            ), static::getValueKey());
+            return new TableSchema($schemaData);
+        }, 300);
+        //Yii::warning(ArrayHelper::toArray($tableSchema), '$tableSchema');
+        return $tableSchema;
     }
 
     /**
@@ -329,7 +355,7 @@ class ActiveRecord extends BaseActiveRecord
      */
     public function attributes()
     {
-        return [];
+        return array_keys(static::getTableSchema()->columns);;
     }
 
     /**
@@ -374,10 +400,8 @@ class ActiveRecord extends BaseActiveRecord
     public static function populateRecord($record, $row)
     {
         $columns = $record->getTableSchema()->columns;
-        Yii::warning($columns, '$columns');
         foreach ($row as $name => $value) {
             if (isset($columns[$name])) {
-                Yii::warning($name);
                 $row[$name] = $columns[$name]->phpTypecast($value);
             }
         }
@@ -428,7 +452,6 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать для b24
     public function insert($runValidation = true, $attributes = null)
     {
-        Yii::warning('insert', 'ar');
         if ($runValidation && !$this->validate($attributes)) {
             Yii::info('Model not inserted due to validation error.', __METHOD__);
             return false;
@@ -467,7 +490,6 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать для b24
     protected function insertInternal($attributes = null)
     {
-        Yii::warning('insertInternal', 'ar');
         if (!$this->beforeSave(true)) {
             return false;
         }
@@ -544,7 +566,6 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать для b24
     public function update($runValidation = true, $attributeNames = null)
     {
-        Yii::warning('update', 'ar');
         if ($runValidation && !$this->validate($attributeNames)) {
             Yii::info('Model not updated due to validation error.', __METHOD__);
             return false;
@@ -629,7 +650,6 @@ class ActiveRecord extends BaseActiveRecord
     //  Переписать для b24
     protected function deleteInternal()
     {
-        Yii::warning('deleteInternal', 'ar');
         if (!$this->beforeDelete()) {
             return false;
         }

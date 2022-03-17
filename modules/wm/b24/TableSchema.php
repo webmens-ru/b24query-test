@@ -110,12 +110,9 @@ class TableSchema extends BaseObject
     {
         $columns = [];
         foreach ($columnsData as $key => $columnData) {
-
-            Yii::warning($columnData, '$columnData');
             $column = new ColumnSchema();
             $column->prepare($key, $columnData);
 //            $column = ColumnSchema::prepare($key, $columnData);
-            Yii::warning(ArrayHelper::toArray($column), '$column');
             $columns[$key] = $column;
         }
 

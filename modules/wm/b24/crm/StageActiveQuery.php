@@ -8,10 +8,9 @@ use app\modules\wm\b24\ActiveQuery;
 
 class StageActiveQuery extends ActiveQuery {
 
-    public static function oneDataSelector()
-    {
-        return 'result';
-    }
+    protected $listMethodName = 'crm.status.list';
+
+    protected $oneMethodName = 'crm.status.get';
 
 //    protected function getPrimaryTableName()
 //    {

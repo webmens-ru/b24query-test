@@ -5,8 +5,8 @@ namespace app\controllers;
 use wm\admin\models\User;
 use Yii;
 use yii\filters\auth\CompositeAuth;
-use yii\filters\auth\HttpBearerAuth;
 use yii\helpers\ArrayHelper;
+use wm\yii\filters\auth\HttpBearerAuth;
 
 /**
  * Class ActiveRestController
@@ -48,10 +48,9 @@ class B24ActiveRestController extends \yii\rest\ActiveController {
                 ],
             ],
             'authenticator' => [
-//                'class' => HttpBearerAuth::class,
                 'class' => CompositeAuth::className(),
                 'authMethods' => [
-                    \app\filters\auth\HttpBearerAuth::className(),
+                    HttpBearerAuth::className(),
                 ],
             ],
         ];
