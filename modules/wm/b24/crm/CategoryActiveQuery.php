@@ -9,6 +9,14 @@ use app\modules\wm\b24\ActiveQuery;
 class CategoryActiveQuery extends ActiveQuery {
     public $entityTypeId;
 
+    protected $listMethodName = 'crm.category.list';
+
+    protected $oneMethodName = 'crm.category.get';
+
+    protected $listDataSelectorName = 'result.categories';
+
+    protected $oneDataSelectorName = 'result.category';
+
     public function getEntityTypeIdUsedInFrom()
     {
         if (empty($this->entityTypeId)) {
@@ -16,11 +24,6 @@ class CategoryActiveQuery extends ActiveQuery {
         }
 
         return $this->entityTypeId;
-    }
-
-    public static function oneDataSelector()
-    {
-        return 'result.category';
     }
 
 //    protected function getPrimaryTableName()

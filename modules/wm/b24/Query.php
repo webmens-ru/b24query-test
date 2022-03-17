@@ -22,6 +22,7 @@ class Query extends Component implements QueryInterface {
     public $having;
     public $union;
     public $withQueries;
+    protected $oneDataSelectorName;
 
     /**
      * Список массивов @var значений параметров запроса, проиндексированных заполнителями параметров.
@@ -111,11 +112,6 @@ class Query extends Component implements QueryInterface {
     //private $_entityTypeId = 174;
 
     public $modelClass;
-
-    public static function oneDataSelector()
-    {
-        return 'result';
-    }
 
     public function all($auth = null){
 //        Yii::warning('function all($auth = null)');
@@ -686,10 +682,9 @@ class Query extends Component implements QueryInterface {
 //        }
 //        return $data; //Добавить вывод дополнительной информации
 
-        $this->dataSelector = $this->oneDataSelector();
         $this->method = call_user_func([$this->modelClass, 'oneMethod']);
         $data = $obB24->client->call($this->method, $this->params);
-        $row = ArrayHelper::getValue($data, $this->dataSelector);
+        $row = ArrayHelper::getValue($data, $this->oneDataSelectorName);
         return $row;
         //TODO Нужно ли здесь делать populate
         //return $this->populate([$rows]);

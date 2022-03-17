@@ -74,6 +74,14 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      */
     public $asArray;
 
+    protected $listMethodName;
+
+    protected $oneMethodName;
+
+    protected $listDataSelectorName = 'result';
+
+    protected $oneDataSelectorName = 'result';
+
     const EVENT_INIT = 'init';
 
     public $params = [];
@@ -349,16 +357,16 @@ class ActiveQuery extends Query implements ActiveQueryInterface
 
     public function getData($obB24)
     {
-        $this->method = call_user_func([$this->modelClass, 'listMethod']);
-        $this->listDataSelector = $this->getListDataSelector();
+        $this->method = $this->listMethodName;
+        $this->listDataSelector = $this->listDataSelectorName;
         $request = $obB24->client->call($this->method, $this->params);
         return ArrayHelper::getValue($request, $this->listDataSelector);
     }
 
     public function getFullData($obB24)
     {
-        $this->method = call_user_func([$this->modelClass, 'listMethod']);
-        $this->listDataSelector = $this->getListDataSelector();
+        $this->method = $this->listMethodName;
+        $this->listDataSelector = $this->listDataSelectorName;
         $request = $obB24->client->call($this->method, $this->params);
         $countCalls = (int)ceil($request['total'] / $obB24->client::MAX_BATCH_CALLS);
         $data = ArrayHelper::getValue($request, $this->listDataSelector);
