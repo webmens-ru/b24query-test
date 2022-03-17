@@ -8,7 +8,7 @@ class B24SpTest extends SpActiveRecord
 {
     public static function entityTypeId()
     {
-        return 175;
+        return 174;
     }
 
     public function getCategory()
