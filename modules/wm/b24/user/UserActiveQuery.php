@@ -59,7 +59,7 @@ class UserActiveQuery extends \app\modules\wm\b24\ActiveQuery
             $id = ArrayHelper::getValue($this->where, 'inArray.0');
         }
         $data = [
-            'entityTypeId' => $this->entityTypeId,
+//            'entityTypeId' => $this->entityTypeId,
             'id' => $id
         ];
         $this->params = $data;
