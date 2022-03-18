@@ -7,6 +7,7 @@
 
 namespace app\modules\wm\data;
 
+use app\modules\wm\b24\TableSchema;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
 use yii\base\Model;
@@ -56,10 +57,10 @@ class B24DataProvider extends BaseDataProvider
 //        }
         $query = clone $this->query;
         if (($pagination = $this->getPagination()) !== false) {
-//            $pagination->totalCount = $this->getTotalCount();
-//            if ($pagination->totalCount === 0) {
-//                return [];
-//            }
+            $pagination->totalCount = $this->getTotalCount();
+            if ($pagination->totalCount === 0) {
+                return [];
+            }
             $query->limit($pagination->getLimit())->offset($pagination->getOffset());
         }
         if (($sort = $this->getSort()) !== false) {
@@ -68,6 +69,17 @@ class B24DataProvider extends BaseDataProvider
 //
         return $query->all($this->auth);
         //return [];
+    }
+
+    public function getTotalCount()
+    {
+        if ($this->getPagination() === false) {
+            return $this->getCount();
+        } elseif ($this->_totalCount === null) {
+            $this->_totalCount = $this->prepareTotalCount();
+        }
+
+        return $this->_totalCount;
     }
 
     protected function prepareKeys($models)
@@ -119,11 +131,10 @@ class B24DataProvider extends BaseDataProvider
 
     protected function prepareTotalCount()
     {
-//        if (!$this->query instanceof QueryInterface) {
-//            throw new InvalidConfigException('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
-//        }
-//        $query = clone $this->query;
-//        return (int) $query->limit(-1)->offset(-1)->orderBy([])->count('*', $this->db);
-        return 44;
+        if (!$this->query instanceof QueryInterface) {
+            throw new InvalidConfigException('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
+        }
+        $query = clone $this->query;
+        return (int) $query->count();
     }
 }
