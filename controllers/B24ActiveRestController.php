@@ -84,7 +84,9 @@ class B24ActiveRestController extends \yii\rest\ActiveController {
                 return ArrayHelper::toArray(json_decode($auth));
             },
             // TODO DУдалить следующую строку
-            'pagination' =>false,
+            'pagination' =>[
+                'pageSize' => 50
+            ],
         ];
         return $actions;
     }

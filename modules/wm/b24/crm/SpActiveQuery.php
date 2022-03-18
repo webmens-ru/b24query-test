@@ -38,6 +38,7 @@ class SpActiveQuery extends \app\modules\wm\b24\ActiveQuery
             'filter' => $this->where,
             'order' => $this->orderBy,
             'select' => $this->select,
+            'start' => $this->offset,
             //Остальные параметры
         ];
         $this->params = $data;

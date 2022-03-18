@@ -108,6 +108,24 @@ class Query extends Component implements QueryInterface {
         return $this->populate($rows);
     }
 
+    public function count($q = '*', $auth = null){
+        if ($this->emulateExecution) {
+            return [];
+        }
+        $this->prepairParams();
+        //TODO вынести часть логики
+        $component = new b24Tools();
+        $b24App = null;// $component->connectFromUser($auth);
+        if($auth === null){
+            $b24App = $component->connectFromAdmin();
+        }else{
+            $b24App = $component->connectFromUser($auth);
+        }
+        $obB24 = new B24Object($b24App);
+        $request = $obB24->client->call($this->listMethodName, $this->params);
+        return (int)ArrayHelper::getValue($request, 'total');
+    }
+
     public function populate($rows)
     {
         //$result = $rows;
@@ -202,15 +220,15 @@ class Query extends Component implements QueryInterface {
         return (bool) $command->queryScalar();
     }
 
-    public function count($q = '*', $db = null)
-    {
-        //TODO Переписать
-        if ($this->emulateExecution) {
-            return 0;
-        }
-
-        return $this->queryScalar("COUNT($q)", $db);
-    }
+//    public function count($q = '*', $db = null)
+//    {
+//        //TODO Переписать
+//        if ($this->emulateExecution) {
+//            return 0;
+//        }
+//
+//        return $this->queryScalar("COUNT($q)", $db);
+//    }
 
     public function one($auth = null)
     {
