@@ -7,7 +7,7 @@
 
 namespace app\controllers;
 
-use app\models\b24\B24DataProvider;
+use app\modules\wm\data\B24DataProvider;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\DataFilter;

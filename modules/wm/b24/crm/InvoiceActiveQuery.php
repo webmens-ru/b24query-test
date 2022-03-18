@@ -1,21 +1,29 @@
 <?php
 
+
 namespace app\modules\wm\b24\crm;
 
-//Код не универсален а направлен на смарт процессы стоит перенести в другой класс
-use yii\helpers\ArrayHelper;
-use app\modules\wm\b24\ActiveQuery;
 
-class CrmActiveQuery extends ActiveQuery {
-//    public $entityTypeId;
+use yii\helpers\ArrayHelper;
+
+
+class InvoiceActiveQuery extends \app\modules\wm\b24\ActiveQuery
+{
+    public $entityTypeId;
+
+    protected $listMethodName = 'crm.item.list';
+
+    protected $oneMethodName = 'crm.item.get';
+
+    protected $listDataSelector = 'result.items';
 
     public function getEntityTypeIdUsedInFrom()
     {
-//        if (empty($this->entityTypeId)) {
-//            $this->entityTypeId = $this->modelClass::entityTypeId();
-//        }
+        if (empty($this->entityTypeId)) {
+            $this->entityTypeId = $this->modelClass::entityTypeId();
+        }
 
-        return '';
+        return $this->entityTypeId;
     }
 
 //    protected function getPrimaryTableName()
@@ -27,12 +35,12 @@ class CrmActiveQuery extends ActiveQuery {
 //    }
 
     protected function prepairParams(){
-//        $this->getEntityTypeIdUsedInFrom();
+        $this->getEntityTypeIdUsedInFrom();
 //        \Yii::warning($this->orderBy, '$this->orderBy');
         $data = [
-//            'entityTypeId' => $this->entityTypeId,
+            'entityTypeId' => $this->entityTypeId,
             'filter' => $this->where,
-            'order' => $this->orderBy?$this->orderBy:null,
+            'order' => $this->orderBy,
             'select' => $this->select,
             //Остальные параметры
         ];
@@ -40,14 +48,9 @@ class CrmActiveQuery extends ActiveQuery {
         $this->params = $data;
     }
 
-    public static function oneDataSelector()
-    {
-        return 'result';
-    }
-
     protected function prepairOneParams(){
         $this->getEntityTypeIdUsedInFrom();
-        \Yii::warning($this->orderBy, '$this->orderBy');
+//        \Yii::warning($this->orderBy, '$this->orderBy');
         $id = null;
         if(ArrayHelper::getValue($this->where, 'id')){
             $id = ArrayHelper::getValue($this->where, 'id');
@@ -56,7 +59,7 @@ class CrmActiveQuery extends ActiveQuery {
             $id = ArrayHelper::getValue($this->where, 'inArray.0');
         }
         $data = [
-//            'entityTypeId' => $this->entityTypeId,
+            'entityTypeId' => $this->entityTypeId,
             'id' => $id
         ];
         $this->params = $data;
